@@ -389,7 +389,10 @@ and this is the third line.
             ZishLocationException(0, 0, '')),
 
         # Input string ending in a newline
-        ("{}\n", {})])
+        ("{}\n", {}),
+
+        # Check good error for string that itsn't finished
+        ('"', ZishLocationException(0, 0, ''))])
 def test_loads(zish_str, pyth):
     if isinstance(pyth, ZishLocationException):
         with pytest.raises(ZishLocationException):

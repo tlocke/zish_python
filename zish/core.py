@@ -310,6 +310,7 @@ def lex(zish_str):
     payload = []
     line = 0
     character = -1
+    token_line = token_character = None
     prev_c = None
     for c in chain(zish_str, (None,)):
         # print("character", c, token_type, "payload", payload)
@@ -322,23 +323,42 @@ def lex(zish_str):
         character += 1
 
         if in_token:
-            if token_type == TokenType.STRING and c == '"' and prev_c != '\\':
-                yield Token(
-                    TokenType.PRIMITIVE, line, character,
-                    unescape(''.join(payload)))
-                in_token = False
-                consumed = True
-
-            elif token_type == TokenType.BYTES and c == "'":
-                try:
+            if token_type == TokenType.STRING:
+                if c == '"' and prev_c != '\\':
                     yield Token(
                         TokenType.PRIMITIVE, line, character,
-                        b64decode(''.join(payload).strip(), validate=True))
-                except binascii.Error as e:
-                    raise ZishLocationException(line, character, str(e))
+                        unescape(''.join(payload)))
+                    in_token = False
+                    consumed = True
+                elif c is None:
+                    raise ZishLocationException(
+                        token_line, token_character,
+                        "Parsing a string but can't find the ending '\"'. " +
+                        "The first part of the string is: " +
+                        ''.join(payload)[:10])
 
-                in_token = False
-                consumed = True
+                else:
+                    payload.append(c)
+
+            elif token_type == TokenType.BYTES:
+                if c == "'":
+                    try:
+                        yield Token(
+                            TokenType.PRIMITIVE, line, character,
+                            b64decode(''.join(payload).strip(), validate=True))
+                    except binascii.Error as e:
+                        raise ZishLocationException(line, character, str(e))
+
+                    in_token = False
+                    consumed = True
+                elif c is None:
+                    raise ZishLocationException(
+                        token_line, token_character,
+                        "Parsing bytes but can't find the ending '\''. " +
+                        "The first part of the bytes is: " +
+                        ''.join(payload)[:10])
+                else:
+                    payload.append(c)
 
             elif token_type == TokenType.NO_DELIM:
                 if c == 'T':
@@ -438,7 +458,9 @@ def lex(zish_str):
                     consumed = True
 
             else:
-                payload.append(c)
+                raise Exception(
+                    "Token type " + str(token_type) +
+                    " not recognized. at character " + c)
 
         if not in_token and not consumed:
             if c in SPACE:
@@ -448,10 +470,14 @@ def lex(zish_str):
             elif c == '"':
                 token_type = TokenType.STRING
                 in_token = True
+                token_line = line
+                token_character = character
                 payload.clear()
             elif c == "'":
                 token_type = TokenType.BYTES
                 in_token = True
+                token_line = line
+                token_character = character
                 payload.clear()
             elif c == '/':
                 token_type = TokenType.COMMENT
