@@ -5,7 +5,6 @@ from collections.abc import Mapping
 from collections import namedtuple
 from datetime import datetime as Datetime, timezone as Timezone
 import re
-from enum import IntEnum, unique
 from itertools import chain
 import binascii
 
@@ -25,32 +24,29 @@ class ZishLocationException(ZishException):
             str(character) + ": " + message)
 
 
-@unique
-class TokenType(IntEnum):
+# Single character tokens
+TT_START_MAP = 0
+TT_FINISH_MAP = 1
+TT_COLON = 2
+TT_COMMA = 3
+TT_START_LIST = 4
+TT_FINISH_LIST = 5
+TT_START_SET = 6
+TT_FINISH_SET = 7
 
-    # Single character tokens
-    START_MAP = 0
-    FINISH_MAP = 1
-    COLON = 2
-    COMMA = 3
-    START_LIST = 4
-    FINISH_LIST = 5
-    START_SET = 6
-    FINISH_SET = 7
+# Delimited tokens
+TT_BYTES = 8
+TT_STRING = 9
 
-    # Delimited tokens
-    BYTES = 8
-    STRING = 9
+TT_PRIMITIVE = 10  # General primitive type
+TT_NO_DELIM = 11  # Non-delimited primitive
 
-    PRIMITIVE = 10  # General primitive type
-    NO_DELIM = 11  # Non-delimited primitive
+TT_TIMESTAMP = 12
 
-    TIMESTAMP = 12
-
-    # Comments
-    COMMENT = 13  # Either inline or block
-    INLINE_COMMENT = 14
-    BLOCK_COMMENT = 15
+# Comments
+TT_COMMENT = 13  # Either inline or block
+TT_INLINE_COMMENT = 14
+TT_BLOCK_COMMENT = 15
 
 
 def load(file_like):
@@ -68,16 +64,15 @@ def loads(zish_str):
 
 
 def parse(token, tokens):
-    if token.token_type == TokenType.PRIMITIVE:
+    if token.token_type == TT_PRIMITIVE:
         return token.value
 
-    elif token.token_type == TokenType.START_LIST:
+    elif token.token_type == TT_START_LIST:
         val = []
         token = next(tokens)
-        while token.token_type != TokenType.FINISH_LIST:
+        while token.token_type != TT_FINISH_LIST:
             if token.token_type in (
-                    TokenType.PRIMITIVE, TokenType.START_LIST,
-                    TokenType.START_MAP, TokenType.START_SET):
+                    TT_PRIMITIVE, TT_START_LIST, TT_START_MAP, TT_START_SET):
                 val.append(parse(token, tokens))
             else:
                 raise ZishLocationException(
@@ -86,13 +81,13 @@ def parse(token, tokens):
                     token.value + "'")
 
             token = next(tokens)
-            if token.token_type == TokenType.COMMA:
+            if token.token_type == TT_COMMA:
                 token = next(tokens)
-                if token.token_type == TokenType.FINISH_LIST:
+                if token.token_type == TT_FINISH_LIST:
                     raise ZishLocationException(
                         token.line, token.character,
                         "Trailing commas aren't allowed in Zish.")
-            elif token.token_type == TokenType.FINISH_LIST:
+            elif token.token_type == TT_FINISH_LIST:
                 pass
             else:
                 raise ZishLocationException(
@@ -102,12 +97,12 @@ def parse(token, tokens):
 
         return tuple(val)
 
-    elif token.token_type == TokenType.START_MAP:
+    elif token.token_type == TT_START_MAP:
         val = {}
         token = next(tokens)
-        while token.token_type != TokenType.FINISH_MAP:
+        while token.token_type != TT_FINISH_MAP:
 
-            if token.token_type == TokenType.PRIMITIVE:
+            if token.token_type == TT_PRIMITIVE:
                 k = token.value
             else:
                 raise ZishLocationException(
@@ -116,15 +111,14 @@ def parse(token, tokens):
                     token.value + "'")
 
             token = next(tokens)
-            if token.token_type != TokenType.COLON:
+            if token.token_type != TT_COLON:
                 raise ZishLocationException(
                     token.line, token.character,
                     "Expected a ':' here, but got '" + token.value + "'.")
 
             token = next(tokens)
             if token.token_type in (
-                    TokenType.PRIMITIVE, TokenType.START_LIST,
-                    TokenType.START_MAP, TokenType.START_SET):
+                    TT_PRIMITIVE, TT_START_LIST, TT_START_MAP, TT_START_SET):
                 val[k] = parse(token, tokens)
             else:
                 raise ZishLocationException(
@@ -133,13 +127,13 @@ def parse(token, tokens):
                     "but got '" + token.value + "'")
 
             token = next(tokens)
-            if token.token_type == TokenType.COMMA:
+            if token.token_type == TT_COMMA:
                 token = next(tokens)
-                if token.token_type == TokenType.FINISH_MAP:
+                if token.token_type == TT_FINISH_MAP:
                     raise ZishLocationException(
                         token.line, token.character,
                         "Trailing commas aren't allowed in Zish.")
-            elif token.token_type == TokenType.FINISH_MAP:
+            elif token.token_type == TT_FINISH_MAP:
                 pass
             else:
                 raise ZishLocationException(
@@ -148,13 +142,11 @@ def parse(token, tokens):
                     "'")
         return val
 
-    elif token.token_type == TokenType.START_SET:
+    elif token.token_type == TT_START_SET:
         val = set()
         token = next(tokens)
-        while token.token_type != TokenType.FINISH_SET:
-            if token.token_type in (
-                    TokenType.PRIMITIVE, TokenType.START_LIST,
-                    TokenType.START_SET):
+        while token.token_type != TT_FINISH_SET:
+            if token.token_type in (TT_PRIMITIVE, TT_START_LIST, TT_START_SET):
                 val.add(parse(token, tokens))
             else:
                 raise ZishLocationException(
@@ -163,13 +155,13 @@ def parse(token, tokens):
                     token.value + "'")
 
             token = next(tokens)
-            if token.token_type == TokenType.COMMA:
+            if token.token_type == TT_COMMA:
                 token = next(tokens)
-                if token.token_type == TokenType.FINISH_SET:
+                if token.token_type == TT_FINISH_SET:
                     raise ZishLocationException(
                         token.line, token.character,
                         "Trailing commas aren't allowed in Zish.")
-            elif token.token_type == TokenType.FINISH_SET:
+            elif token.token_type == TT_FINISH_SET:
                 pass
             else:
                 raise ZishLocationException(
@@ -273,14 +265,14 @@ Token = namedtuple('Token', ['token_type', 'line', 'character', 'value'])
 
 
 SINGLE_TOKENS = {
-    '{': TokenType.START_MAP,
-    '}': TokenType.FINISH_MAP,
-    ':': TokenType.COLON,
-    ',': TokenType.COMMA,
-    '[': TokenType.START_LIST,
-    ']': TokenType.FINISH_LIST,
-    '(': TokenType.START_SET,
-    ')': TokenType.FINISH_SET}
+    '{': TT_START_MAP,
+    '}': TT_FINISH_MAP,
+    ':': TT_COLON,
+    ',': TT_COMMA,
+    '[': TT_START_LIST,
+    ']': TT_FINISH_LIST,
+    '(': TT_START_SET,
+    ')': TT_FINISH_SET}
 
 
 SPACE = {
@@ -323,10 +315,10 @@ def lex(zish_str):
         character += 1
 
         if in_token:
-            if token_type == TokenType.STRING:
+            if token_type == TT_STRING:
                 if c == '"' and prev_c != '\\':
                     yield Token(
-                        TokenType.PRIMITIVE, line, character,
+                        TT_PRIMITIVE, line, character,
                         unescape(''.join(payload)))
                     in_token = False
                     consumed = True
@@ -340,11 +332,11 @@ def lex(zish_str):
                 else:
                     payload.append(c)
 
-            elif token_type == TokenType.BYTES:
+            elif token_type == TT_BYTES:
                 if c == "'":
                     try:
                         yield Token(
-                            TokenType.PRIMITIVE, line, character,
+                            TT_PRIMITIVE, line, character,
                             b64decode(''.join(payload).strip(), validate=True))
                     except binascii.Error as e:
                         raise ZishLocationException(line, character, str(e))
@@ -360,29 +352,29 @@ def lex(zish_str):
                 else:
                     payload.append(c)
 
-            elif token_type == TokenType.NO_DELIM:
+            elif token_type == TT_NO_DELIM:
                 if c == 'T':
-                    token_type = TokenType.TIMESTAMP
+                    token_type = TT_TIMESTAMP
                     payload.append(c)
 
                 elif c in NO_DELIM_END:
                     ustr = ''.join(payload)
                     if ustr == 'true':
-                        yield Token(TokenType.PRIMITIVE, line, character, True)
+                        yield Token(TT_PRIMITIVE, line, character, True)
                     elif ustr == 'false':
                         yield Token(
-                            TokenType.PRIMITIVE, line, character, False)
+                            TT_PRIMITIVE, line, character, False)
                     elif ustr == 'null':
-                        yield Token(TokenType.PRIMITIVE, line, character, None)
+                        yield Token(TT_PRIMITIVE, line, character, None)
                     elif RE_INTEGER.match(ustr) is not None:
                         yield Token(
-                            TokenType.PRIMITIVE, line, character, int(ustr))
+                            TT_PRIMITIVE, line, character, int(ustr))
                     elif RE_FLOAT.match(ustr) is not None:
                         yield Token(
-                            TokenType.PRIMITIVE, line, character, float(ustr))
+                            TT_PRIMITIVE, line, character, float(ustr))
                     elif RE_DECIMAL.match(ustr) is not None:
                         yield Token(
-                            TokenType.PRIMITIVE, line, character,
+                            TT_PRIMITIVE, line, character,
                             Decimal(ustr.replace('d', 'e')))
                     else:
                         raise ZishLocationException(
@@ -393,14 +385,14 @@ def lex(zish_str):
                 else:
                     payload.append(c)
 
-            elif token_type == TokenType.TIMESTAMP:
+            elif token_type == TT_TIMESTAMP:
                 if c in ('z', 'Z'):
                     payload.append(c)
                     tstr = ''.join(payload)
                     if RE_TIMESTAMP.match(tstr) is not None:
                         try:
                             yield Token(
-                                TokenType.PRIMITIVE, line, character,
+                                TT_PRIMITIVE, line, character,
                                 arrow.get(tstr).datetime)
                         except arrow.parser.ParserError as e:
                             raise ZishLocationException(
@@ -419,7 +411,7 @@ def lex(zish_str):
                     if RE_TIMESTAMP.match(tstr) is not None:
                         try:
                             yield Token(
-                                TokenType.PRIMITIVE, line, character,
+                                TT_PRIMITIVE, line, character,
                                 arrow.get(tstr).datetime)
                         except arrow.parser.ParserError as e:
                             raise ZishLocationException(
@@ -438,21 +430,21 @@ def lex(zish_str):
                 else:
                     payload.append(c)
 
-            elif token_type == TokenType.COMMENT:
+            elif token_type == TT_COMMENT:
                 if c == '/':
-                    token_type = TokenType.INLINE_COMMENT
+                    token_type = TT_INLINE_COMMENT
                 elif c == '*':
-                    token_type = TokenType.BLOCK_COMMENT
+                    token_type = TT_BLOCK_COMMENT
                 else:
                     raise ZishLocationException(
                         line, character, "Expected a '/' or '*' here.")
 
-            elif token_type == TokenType.INLINE_COMMENT:
+            elif token_type == TT_INLINE_COMMENT:
                 if c == '\n':
                     in_token = False
                     consumed = True
 
-            elif token_type == TokenType.BLOCK_COMMENT:
+            elif token_type == TT_BLOCK_COMMENT:
                 if c == '/' and prev_c == '*':
                     in_token = False
                     consumed = True
@@ -468,23 +460,23 @@ def lex(zish_str):
             elif c in SINGLE_TOKENS:
                 yield Token(SINGLE_TOKENS[c], line, character, c)
             elif c == '"':
-                token_type = TokenType.STRING
+                token_type = TT_STRING
                 in_token = True
                 token_line = line
                 token_character = character
                 payload.clear()
             elif c == "'":
-                token_type = TokenType.BYTES
+                token_type = TT_BYTES
                 in_token = True
                 token_line = line
                 token_character = character
                 payload.clear()
             elif c == '/':
-                token_type = TokenType.COMMENT
+                token_type = TT_COMMENT
                 in_token = True
                 payload.clear()
             else:
-                token_type = TokenType.NO_DELIM
+                token_type = TT_NO_DELIM
                 in_token = True
                 payload.clear()
                 payload.append(c)
