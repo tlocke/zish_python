@@ -391,8 +391,11 @@ and this is the third line.
         # Input string ending in a newline
         ("{}\n", {}),
 
-        # Check good error for string that itsn't finished
-        ('"', ZishLocationException(0, 0, ''))])
+        # Check good error for string that isn't finished
+        ('"', ZishLocationException(0, 0, '')),
+
+        # Check good error for map when ':' is expected.
+        ('{"num" 1}', ZishLocationException(0, 0, ''))])
 def test_loads(zish_str, pyth):
     if isinstance(pyth, ZishLocationException):
         with pytest.raises(ZishLocationException):

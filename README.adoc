@@ -106,6 +106,12 @@ A Hero of Our Time
 === Release Notes
 
 
+==== Version 0.0.15 (2017-09-05)
+
+* Fixed map parsing bug where an error wasn't reported properly if it was
+  expecting a `:` but got an integer.
+
+
 ==== Version 0.0.14 (2017-09-05)
 
 * Fixed bug where sets couldn't be formatted.

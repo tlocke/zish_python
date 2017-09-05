@@ -114,7 +114,7 @@ def parse(token, tokens):
             if token.token_type != TT_COLON:
                 raise ZishLocationException(
                     token.line, token.character,
-                    "Expected a ':' here, but got '" + token.value + "'.")
+                    "Expected a ':' here, but got '" + str(token.value) + "'.")
 
             token = next(tokens)
             if token.token_type in (
