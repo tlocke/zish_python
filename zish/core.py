@@ -257,6 +257,10 @@ def _dump(obj, indent):
             return obj.strftime(UTC_FORMAT)
         else:
             return obj.isoformat()
+    elif isinstance(obj, (set, frozenset)):
+        new_indent = indent + '  '
+        b = ','.join('\n' + new_indent + _dump(v, new_indent) for v in obj)
+        return '(' + b + ')'
     else:
         raise ZishException("Type " + str(type(obj)) + " not recognised.")
 

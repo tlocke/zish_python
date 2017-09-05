@@ -432,7 +432,9 @@ def test_loads(zish_str, pyth):
   "weight": 6.88e0,
   "would_recommend": true}"""),
 
-        ((), '[]')])
+        ((), '[]'),
+
+        (set(), '()')])
 def test_dumps(pyth, zish_str):
     assert dumps(pyth) == zish_str
 
