@@ -395,7 +395,10 @@ and this is the third line.
         ('"', ZishLocationException(0, 0, '')),
 
         # Check good error for map when ':' is expected.
-        ('{"num" 1}', ZishLocationException(0, 0, ''))])
+        ('{"num" 1}', ZishLocationException(0, 0, '')),
+
+        # Map with list as a key.
+        ('{["num", 1]: 1}', {('num', 1): 1})])
 def test_loads(zish_str, pyth):
     if isinstance(pyth, ZishLocationException):
         with pytest.raises(ZishLocationException):
@@ -444,7 +447,8 @@ def test_dumps(pyth, zish_str):
 
 '''
 def test_str():
-    pstr = """"""
+    pstr = """
+"""
 
     conv = loads(pstr)
     assert conv == {'first': "a", 'last': "b"}

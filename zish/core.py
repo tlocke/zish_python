@@ -102,13 +102,12 @@ def parse(token, tokens):
         token = next(tokens)
         while token.token_type != TT_FINISH_MAP:
 
-            if token.token_type == TT_PRIMITIVE:
-                k = token.value
-            else:
+            if token.token_type == TT_START_MAP:
                 raise ZishLocationException(
                     token.line, token.character,
-                    "Expected a primitive value here, but got '" +
-                    token.value + "'")
+                    "A map isn't allowed as a key.")
+
+            k = parse(token, tokens)
 
             token = next(tokens)
             if token.token_type != TT_COLON:
