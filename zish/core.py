@@ -102,12 +102,17 @@ def parse(token, tokens):
         token = next(tokens)
         while token.token_type != TT_FINISH_MAP:
 
-            if token.token_type == TT_START_MAP:
-                raise ZishLocationException(
-                    token.line, token.character,
-                    "A map isn't allowed as a key.")
-
-            k = parse(token, tokens)
+            if token.token_type in (TT_PRIMITIVE, TT_START_SET, TT_START_LIST):
+                k = parse(token, tokens)
+            else:
+                if token.token_type == TT_START_MAP:
+                    raise ZishLocationException(
+                        token.line, token.character,
+                        "A map isn't allowed as a key.")
+                else:
+                    raise ZishLocationException(
+                        token.line, token.character,
+                        "Expected a key here, but got a " + token.value)
 
             token = next(tokens)
             if token.token_type != TT_COLON:
@@ -150,7 +155,7 @@ def parse(token, tokens):
             else:
                 raise ZishLocationException(
                     token.line, token.character,
-                    "Expected a primitive value here, but got '" +
+                    "Expected a primitive, list or set here, but got '" +
                     token.value + "'")
 
             token = next(tokens)
@@ -235,7 +240,7 @@ def _dump(obj, indent):
     elif isinstance(obj, int):
         return str(obj)
     elif isinstance(obj, float):
-        val = str(obj)
+        val = str(obj).replace('E', 'e')
         if 'e' not in val:
             return val + 'e0'
         else:

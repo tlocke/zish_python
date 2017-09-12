@@ -398,7 +398,10 @@ and this is the third line.
         ('{"num" 1}', ZishLocationException(0, 0, '')),
 
         # Map with list as a key.
-        ('{["num", 1]: 1}', {('num', 1): 1})])
+        ('{["num", 1]: 1}', {('num', 1): 1}),
+
+        # Invalid token after beginning of map.
+        ('{:: 1}', ZishLocationException(0, 0, ''))])
 def test_loads(zish_str, pyth):
     if isinstance(pyth, ZishLocationException):
         with pytest.raises(ZishLocationException):
@@ -440,7 +443,9 @@ def test_loads(zish_str, pyth):
 
         ((), '[]'),
 
-        (set(), '()')])
+        (set(), '()'),
+
+        (0.000001, '1e-06')])
 def test_dumps(pyth, zish_str):
     assert dumps(pyth) == zish_str
 

@@ -106,6 +106,12 @@ A Hero of Our Time
 === Release Notes
 
 
+==== Version 0.0.17 (2017-09-12)
+
+* Tighten up parsing of container types.
+* Make sure floats are formatted without an uppercase E.
+
+
 ==== Version 0.0.16 (2017-09-06)
 
 * Allow lists and sets as keys.
