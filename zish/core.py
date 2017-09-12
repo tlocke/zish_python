@@ -222,6 +222,27 @@ def dumps(obj):
     return _dump(obj, '')
 
 
+_repr_float = repr
+float_plus_inf = float('+inf')
+float_minus_inf = float('-inf')
+float_nan = float('nan')
+
+
+def _dump_float(obj):
+    if obj == float_plus_inf:
+        return '+inf'
+    elif obj == float_minus_inf:
+        return '-inf'
+    elif obj == float_nan:
+        return 'nan'
+    else:
+        val = _repr_float(obj).lower()
+        if 'e' in val:
+            return val
+        else:
+            return val + 'e0'
+
+
 def _dump(obj, indent):
     if isinstance(obj, Mapping):
         new_indent = indent + '  '
@@ -240,11 +261,7 @@ def _dump(obj, indent):
     elif isinstance(obj, int):
         return str(obj)
     elif isinstance(obj, float):
-        val = str(obj).replace('E', 'e')
-        if 'e' not in val:
-            return val + 'e0'
-        else:
-            return val
+        return _dump_float(obj)
     elif isinstance(obj, Decimal):
         return str(obj).replace('e', 'd')
     elif obj is None:

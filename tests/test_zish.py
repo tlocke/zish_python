@@ -1,4 +1,5 @@
-from zish import load, loads, ZishException, dump, dumps, ZishLocationException
+from zish import (
+    load, loads, ZishException, dump, dumps, ZishLocationException, core)
 from io import StringIO
 from datetime import (
     datetime as Datetime, timezone as Timezone, timedelta as Timedelta)
@@ -463,3 +464,22 @@ def test_str():
         print(ord(c))
     raise Exception()
 '''
+
+
+@pytest.mark.parametrize(
+    "pyth,zish_str", [
+        (0e0, '0.0e0'),
+
+        (float('-INF'), '-inf'),
+
+        (float('+inFinity'), '+inf')])
+def test_dump_float(pyth, zish_str):
+    assert core._dump_float(pyth) == zish_str
+
+
+def test_repr_dump_float(monkeypatch):
+    def mock_repr_float(obj):
+        return '0E0'
+
+    monkeypatch.setattr(core, '_repr_float', mock_repr_float)
+    assert core._dump_float(0) == '0e0'
