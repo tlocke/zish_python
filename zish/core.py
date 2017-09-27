@@ -263,7 +263,7 @@ def _dump(obj, indent):
     elif isinstance(obj, float):
         return _dump_float(obj)
     elif isinstance(obj, Decimal):
-        return str(obj).replace('e', 'd')
+        return str(obj).lower().replace('e', 'd')
     elif obj is None:
         return 'null'
     elif isinstance(obj, str):
