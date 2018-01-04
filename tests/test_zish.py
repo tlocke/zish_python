@@ -340,6 +340,16 @@ and this is the third line.
             '{} 3',
             ZishLocationException(0, 0, '')),
 
+        # Map with only opening brace
+        (
+            '{',
+            ZishLocationException(0, 0, '')),
+
+        # Map with only opening brace and value
+        (
+            '{ "Etienne"',
+            ZishLocationException(0, 0, '')),
+
         # Trailing comma is invalid in Zish (like JSON)
         (
             '{ x:1, }',

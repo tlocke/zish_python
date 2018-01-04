@@ -106,7 +106,15 @@ def parse(token, tokens):
 
     elif token.token_type == TT_START_MAP:
         val = {}
-        token = next(tokens)
+
+        try:
+            token = next(tokens)
+        except StopIteration:
+            raise ZishLocationException(
+                token.line, token.character,
+                "After this opening '{', a key or a closing '}' was expected, "
+                "but reached the end of the document instead.")
+
         while token.token_type != TT_FINISH_MAP:
 
             if token.token_type in (TT_PRIMITIVE, TT_START_SET, TT_START_LIST):
@@ -121,13 +129,27 @@ def parse(token, tokens):
                         token.line, token.character,
                         "Expected a key here, but got a " + token.value)
 
-            token = next(tokens)
+            try:
+                token = next(tokens)
+            except StopIteration:
+                raise ZishLocationException(
+                    token.line, token.character,
+                    "After this key, a ':' was expected, but reached the end "
+                    "of the document instead.")
+
             if token.token_type != TT_COLON:
                 raise ZishLocationException(
                     token.line, token.character,
                     "Expected a ':' here, but got '" + str(token.value) + "'.")
 
-            token = next(tokens)
+            try:
+                token = next(tokens)
+            except StopIteration:
+                raise ZishLocationException(
+                    token.line, token.character,
+                    "After this ':', a value was expected, but reached the "
+                    "end of the document instead.")
+
             if token.token_type in (
                     TT_PRIMITIVE, TT_START_LIST, TT_START_MAP, TT_START_SET):
                 val[k] = parse(token, tokens)
@@ -137,7 +159,13 @@ def parse(token, tokens):
                     "Expected a primitive or one of ('[', '{', '(') here, "
                     "but got '" + token.value + "'")
 
-            token = next(tokens)
+            try:
+                token = next(tokens)
+            except StopIteration:
+                raise ZishLocationException(
+                    token.line, token.character,
+                    "After this value, a ',' or a '}' was expected, but "
+                    "reached the end of the document instead.")
             if token.token_type == TT_COMMA:
                 token = next(tokens)
                 if token.token_type == TT_FINISH_MAP:
