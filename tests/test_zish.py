@@ -335,6 +335,11 @@ and this is the third line.
             '{"center":{"x":1.0, "y":12.5}, "radius":3}',
             {'center': {'x': 1.0, 'y': 12.5}, 'radius': 3}),
 
+        # Map with extraneous values
+        (
+            '{} 3',
+            ZishLocationException(0, 0, '')),
+
         # Trailing comma is invalid in Zish (like JSON)
         (
             '{ x:1, }',

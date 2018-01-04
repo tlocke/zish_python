@@ -59,8 +59,15 @@ def dump(obj, file_like):
 
 def loads(zish_str):
     tokens = lex(zish_str)
-    token = next(tokens)
-    return parse(token, tokens)
+    result = parse(next(tokens), tokens)
+    try:
+        token = next(tokens)
+        raise ZishLocationException(
+            token.line, token.character,
+            "Multiple top-level Zish values aren't allowed. For example, at "
+            "the top level you can't have a map followed by another map.")
+    except StopIteration:
+        return result
 
 
 def parse(token, tokens):

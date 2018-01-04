@@ -106,6 +106,12 @@ A Hero of Our Time
 === Release Notes
 
 
+==== Version 0.0.20 (2018-01-04)
+
+* Give an error if there are multiple top-level values, rather than silently
+  truncating.
+
+
 ==== Version 0.0.19 (2017-09-27)
 
 * Decimal exponent dumped as `E` rather than `d`.
