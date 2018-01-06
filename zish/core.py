@@ -24,6 +24,29 @@ class ZishLocationException(ZishException):
             str(character) + ": " + message)
 
 
+class ImmutableDict(Mapping):
+    def __init__(self, somedict):
+        self._dict = dict(somedict)
+        self._hash = None
+
+    def __getitem__(self, key):
+        return self._dict[key]
+
+    def __len__(self):
+        return len(self._dict)
+
+    def __iter__(self):
+        return iter(self._dict)
+
+    def __hash__(self):
+        if self._hash is None:
+            self._hash = hash(frozenset(self._dict.items()))
+        return self._hash
+
+    def __eq__(self, other):
+        return self._dict == other
+
+
 # Single character tokens
 TT_START_MAP = 0
 TT_FINISH_MAP = 1
@@ -84,8 +107,7 @@ def parse(token, tokens):
             else:
                 raise ZishLocationException(
                     token.line, token.character,
-                    "Expected a primitive value here, but got '" +
-                    token.value + "'")
+                    "Expected a value here, but got '" + token.value + "'")
 
             token = next(tokens)
             if token.token_type == TT_COMMA:
@@ -117,17 +139,13 @@ def parse(token, tokens):
 
         while token.token_type != TT_FINISH_MAP:
 
-            if token.token_type in (TT_PRIMITIVE, TT_START_SET, TT_START_LIST):
+            if token.token_type in (
+                    TT_PRIMITIVE, TT_START_SET, TT_START_LIST, TT_START_MAP):
                 k = parse(token, tokens)
             else:
-                if token.token_type == TT_START_MAP:
-                    raise ZishLocationException(
-                        token.line, token.character,
-                        "A map isn't allowed as a key.")
-                else:
-                    raise ZishLocationException(
-                        token.line, token.character,
-                        "Expected a key here, but got a " + token.value)
+                raise ZishLocationException(
+                    token.line, token.character,
+                    "Expected a key here, but got a " + token.value)
 
             try:
                 token = next(tokens)
@@ -156,8 +174,8 @@ def parse(token, tokens):
             else:
                 raise ZishLocationException(
                     token.line, token.character,
-                    "Expected a primitive or one of ('[', '{', '(') here, "
-                    "but got '" + token.value + "'")
+                    "Expected a value here, but got a '" + token.value +
+                    "' instead.")
 
             try:
                 token = next(tokens)
@@ -179,7 +197,7 @@ def parse(token, tokens):
                     token.line, token.character,
                     "Expected a ',' or a '}' here, but got '" + token.value +
                     "'")
-        return val
+        return ImmutableDict(val)
 
     elif token.token_type == TT_START_SET:
         val = set()
