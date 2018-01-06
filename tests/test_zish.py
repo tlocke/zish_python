@@ -262,10 +262,10 @@ def test_dump():
         ('xml::"<e a=\'v\'>c</e>"', ZishLocationException(0, 0, '')),
 
         # Set with one element
-        ('( "hello\rworld!"  )', {'hello\rworld!'}),
+        ('( "hello\rworld!"  )', ZishLocationException(0, 0, '')),
 
         # The exact same set
-        ('("hello world!")', {'hello world!'}),
+        ('("hello world!")', ZishLocationException(0, 0, '')),
 
         # This Zish value is a string containing three newlines. The serialized
         # form's first newline is escaped into nothingness.

@@ -54,22 +54,20 @@ TT_COLON = 2
 TT_COMMA = 3
 TT_START_LIST = 4
 TT_FINISH_LIST = 5
-TT_START_SET = 6
-TT_FINISH_SET = 7
 
 # Delimited tokens
-TT_BYTES = 8
-TT_STRING = 9
+TT_BYTES = 6
+TT_STRING = 7
 
-TT_PRIMITIVE = 10  # General primitive type
-TT_NO_DELIM = 11  # Non-delimited primitive
+TT_PRIMITIVE = 8  # General primitive type
+TT_NO_DELIM = 9  # Non-delimited primitive
 
-TT_TIMESTAMP = 12
+TT_TIMESTAMP = 10
 
 # Comments
-TT_COMMENT = 13  # Either inline or block
-TT_INLINE_COMMENT = 14
-TT_BLOCK_COMMENT = 15
+TT_COMMENT = 11  # Either inline or block
+TT_INLINE_COMMENT = 12
+TT_BLOCK_COMMENT = 13
 
 
 def load(file_like):
@@ -101,8 +99,7 @@ def parse(token, tokens):
         val = []
         token = next(tokens)
         while token.token_type != TT_FINISH_LIST:
-            if token.token_type in (
-                    TT_PRIMITIVE, TT_START_LIST, TT_START_MAP, TT_START_SET):
+            if token.token_type in (TT_PRIMITIVE, TT_START_LIST, TT_START_MAP):
                 val.append(parse(token, tokens))
             else:
                 raise ZishLocationException(
@@ -139,8 +136,7 @@ def parse(token, tokens):
 
         while token.token_type != TT_FINISH_MAP:
 
-            if token.token_type in (
-                    TT_PRIMITIVE, TT_START_SET, TT_START_LIST, TT_START_MAP):
+            if token.token_type in (TT_PRIMITIVE, TT_START_LIST, TT_START_MAP):
                 k = parse(token, tokens)
             else:
                 raise ZishLocationException(
@@ -168,8 +164,7 @@ def parse(token, tokens):
                     "After this ':', a value was expected, but reached the "
                     "end of the document instead.")
 
-            if token.token_type in (
-                    TT_PRIMITIVE, TT_START_LIST, TT_START_MAP, TT_START_SET):
+            if token.token_type in (TT_PRIMITIVE, TT_START_LIST, TT_START_MAP):
                 val[k] = parse(token, tokens)
             else:
                 raise ZishLocationException(
@@ -199,33 +194,6 @@ def parse(token, tokens):
                     "'")
         return ImmutableDict(val)
 
-    elif token.token_type == TT_START_SET:
-        val = set()
-        token = next(tokens)
-        while token.token_type != TT_FINISH_SET:
-            if token.token_type in (TT_PRIMITIVE, TT_START_LIST, TT_START_SET):
-                val.add(parse(token, tokens))
-            else:
-                raise ZishLocationException(
-                    token.line, token.character,
-                    "Expected a primitive, list or set here, but got '" +
-                    token.value + "'")
-
-            token = next(tokens)
-            if token.token_type == TT_COMMA:
-                token = next(tokens)
-                if token.token_type == TT_FINISH_SET:
-                    raise ZishLocationException(
-                        token.line, token.character,
-                        "Trailing commas aren't allowed in Zish.")
-            elif token.token_type == TT_FINISH_SET:
-                pass
-            else:
-                raise ZishLocationException(
-                    token.line, token.character,
-                    "Expected a ',' or a ')' here, but got '" + token.value +
-                    "'")
-        return frozenset(val)
     else:
         raise ZishException("Don't recognize the token type: " + str(token))
 
@@ -348,9 +316,7 @@ SINGLE_TOKENS = {
     ':': TT_COLON,
     ',': TT_COMMA,
     '[': TT_START_LIST,
-    ']': TT_FINISH_LIST,
-    '(': TT_START_SET,
-    ')': TT_FINISH_SET}
+    ']': TT_FINISH_LIST}
 
 
 SPACE = {
