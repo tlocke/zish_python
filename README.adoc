@@ -58,7 +58,7 @@ Zish string to a Python object use `zish.loads`. Eg.
     "novel",
     "19th century"],
   "title": "A Hero of Our Time",
-  "weight": 6.88e0,
+  "weight": 6.88,
   "would_recommend": true}
 >>>
 >>> # Load the Zish string, to give us back the Python object

@@ -189,21 +189,18 @@ def test_dump():
         # Type is decimal
         ('0.123', Decimal('0.123')),
 
-        # Type is float
-        ('-0.12e4', -0.12e4),
-
         # Type is decimal
-        ('-0.12d4', Decimal('-0.12e4')),
+        ('-0.12e4', Decimal('-0.12e4')),
 
-        # Zero as float
-        ('0e0', float(0)),
+        # ERROR: Exponent not denoted by 'd'
+        ('0d0', ZishLocationException(0, 0, '')),
 
         # Error: Zero as float can't have uppercase 'E' in exponent.
         ('0E0', ZishLocationException(0, 0, '')),
 
 
         # Zero as decimal
-        ('0d0', Decimal('0')),
+        ('0e0', Decimal('0')),
 
         # Error: Zero as decimal can't have uppercase 'D' in exponent.
         ('0D0', ZishLocationException(0, 0, '')),
@@ -212,16 +209,16 @@ def test_dump():
         ('0.', Decimal('0')),
 
         # Negative zero float   (distinct from positive zero)
-        ('-0e0', float(-0)),
+        ('-0e0', Decimal(-0)),
 
-        # Negative zero decimal (distinct from positive zero)
-        ('-0d0', Decimal('-0')),
+        # Error: Negative zero decimal with 'd' in expenent.
+        ('-0d0', ZishLocationException(0, 0, '')),
 
         #   ...the same value with different notation
         ('-0.', Decimal('-0')),
 
         # Decimal maintains precision: -0. != -0.0
-        ('-0d-1', Decimal('-0.0')),
+        ('-0e-1', Decimal('-0.0')),
 
         # Error: Decimal can't have underscores
         ('123_456.789_012', ZishLocationException(0, 0, '')),
@@ -454,7 +451,7 @@ def test_loads(zish_str, pyth):
     "novel",
     "19th centuary"],
   "title": "A Hero of Our Time",
-  "weight": 6.88e0,
+  "weight": 6.88,
   "would_recommend": true}"""),
 
         ((), '[]'),
@@ -463,7 +460,7 @@ def test_loads(zish_str, pyth):
 
         (0.000001, '1e-06'),
 
-        (Decimal('0E-8'), '0d-8')])
+        (Decimal('0E-8'), '0e-8')])
 def test_dumps(pyth, zish_str):
     assert dumps(pyth) == zish_str
 
@@ -485,7 +482,7 @@ def test_str():
 
 @pytest.mark.parametrize(
     "pyth,zish_str", [
-        (0e0, '0.0e0'),
+        (0e0, '0.0'),
 
         (float('-INF'), '-inf'),
 

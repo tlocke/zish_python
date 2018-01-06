@@ -258,11 +258,7 @@ def _dump_float(obj):
     elif obj == float_nan:
         return 'nan'
     else:
-        val = _repr_float(obj).lower()
-        if 'e' in val:
-            return val
-        else:
-            return val + 'e0'
+        return _repr_float(obj).lower()
 
 
 def _dump(obj, indent):
@@ -285,7 +281,7 @@ def _dump(obj, indent):
     elif isinstance(obj, float):
         return _dump_float(obj)
     elif isinstance(obj, Decimal):
-        return str(obj).lower().replace('e', 'd')
+        return str(obj).lower()
     elif obj is None:
         return 'null'
     elif isinstance(obj, str):
@@ -332,8 +328,7 @@ SPACE = {
 NO_DELIM_END = set(SINGLE_TOKENS.keys()).union(SPACE, {'/'})
 
 RE_INTEGER = re.compile(r'-?(0|[1-9]\d*)$', re.ASCII)
-RE_FLOAT = re.compile(r'(-?(0|\d*)(\.\d*)?e[+\-]?\d+|[+\-]inf|nan)$', re.ASCII)
-RE_DECIMAL = re.compile(r'-?(0|[1-9]\d*)(\.\d*)?(d[+\-]?\d+)?$', re.ASCII)
+RE_DECIMAL = re.compile(r'-?(0|[1-9]\d*)(\.\d*)?(e[+\-]?\d+)?$', re.ASCII)
 RE_TIMESTAMP = re.compile(
     r'\d\d\d\d-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])T'
     r'([01]\d|2[0-3]):[0-5]\d:[0-5]\d(\.\d+)?'
@@ -414,13 +409,9 @@ def lex(zish_str):
                     elif RE_INTEGER.match(ustr) is not None:
                         yield Token(
                             TT_PRIMITIVE, line, character, int(ustr))
-                    elif RE_FLOAT.match(ustr) is not None:
-                        yield Token(
-                            TT_PRIMITIVE, line, character, float(ustr))
                     elif RE_DECIMAL.match(ustr) is not None:
                         yield Token(
-                            TT_PRIMITIVE, line, character,
-                            Decimal(ustr.replace('d', 'e')))
+                            TT_PRIMITIVE, line, character, Decimal(ustr))
                     else:
                         raise ZishLocationException(
                             line, character, "The value " + ustr +
