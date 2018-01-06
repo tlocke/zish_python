@@ -179,6 +179,7 @@ def parse(token, tokens):
                     token.line, token.character,
                     "After this value, a ',' or a '}' was expected, but "
                     "reached the end of the document instead.")
+
             if token.token_type == TT_COMMA:
                 token = next(tokens)
                 if token.token_type == TT_FINISH_MAP:
@@ -484,7 +485,14 @@ def lex(zish_str):
                         line, character, "Expected a '/' or '*' here.")
 
             elif token_type == TT_INLINE_COMMENT:
-                if c == '\n':
+                if c in (
+                        '\u000A',   # LF: Line Feed
+                        '\u000B',   # VT: Vertical Tab
+                        '\u000C',   # FF: Form Feed
+                        '\u000D',   # CR: Carriage Return
+                        '\u0085',   # NEL: Next Line
+                        '\u2028',   # LS: Line Separator
+                        '\u2029'):  # PS: Paragraph Separator
                     in_token = False
                     consumed = True
 
