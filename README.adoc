@@ -106,6 +106,19 @@ A Hero of Our Time
 === Release Notes
 
 
+==== Version 0.0.22 (2018-01-08)
+
+* A map key can now be of any type.
+
+* The 'set' type has been removed from Zish.
+
+* Zish now recognizes the full set of Unicode EOL sequences.
+
+* The 'float' type has been removed from Zish.
+
+* Fixed bug when sorting map with keys of more than one type.
+
+
 ==== Version 0.0.21 (2018-01-04)
 
 * Give a better error if the end of the document is reached before a map is

@@ -456,11 +456,15 @@ def test_loads(zish_str, pyth):
 
         ((), '[]'),
 
-        (set(), '()'),
+        (set(), '[]'),
 
         (0.000001, '1e-06'),
 
-        (Decimal('0E-8'), '0e-8')])
+        (Decimal('0E-8'), '0e-8'),
+
+        ({1: 2, 'three': 'four'}, """{
+  1: 2,
+  "three": "four"}""")])
 def test_dumps(pyth, zish_str):
     assert dumps(pyth) == zish_str
 

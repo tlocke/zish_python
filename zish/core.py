@@ -265,14 +265,21 @@ def _dump(obj, indent):
     if isinstance(obj, Mapping):
         new_indent = indent + '  '
         items = []
-        for k, v in sorted(obj.items()):
+
+        item_gen = obj.items()
+        try:
+            item_gen = sorted(item_gen)
+        except TypeError:
+            pass
+
+        for k, v in item_gen:
             items.append(
                 '\n' + new_indent + _dump(k, new_indent) + ': ' +
                 _dump(v, new_indent))
         return '{' + ','.join(items) + '}'
     elif isinstance(obj, bool):
         return 'true' if obj else 'false'
-    elif isinstance(obj, (list, tuple)):
+    elif isinstance(obj, (list, tuple, set, frozenset)):
         new_indent = indent + '  '
         b = ','.join('\n' + new_indent + _dump(v, new_indent) for v in obj)
         return '[' + b + ']'
@@ -296,10 +303,6 @@ def _dump(obj, indent):
             return obj.strftime(UTC_FORMAT)
         else:
             return obj.isoformat()
-    elif isinstance(obj, (set, frozenset)):
-        new_indent = indent + '  '
-        b = ','.join('\n' + new_indent + _dump(v, new_indent) for v in obj)
-        return '(' + b + ')'
     else:
         raise ZishException("Type " + str(type(obj)) + " not recognised.")
 
