@@ -24,29 +24,6 @@ class ZishLocationException(ZishException):
             str(character) + ": " + message)
 
 
-class ImmutableDict(Mapping):
-    def __init__(self, somedict):
-        self._dict = dict(somedict)
-        self._hash = None
-
-    def __getitem__(self, key):
-        return self._dict[key]
-
-    def __len__(self):
-        return len(self._dict)
-
-    def __iter__(self):
-        return iter(self._dict)
-
-    def __hash__(self):
-        if self._hash is None:
-            self._hash = hash(frozenset(self._dict.items()))
-        return self._hash
-
-    def __eq__(self, other):
-        return self._dict == other
-
-
 # Single character tokens
 TT_START_MAP = 0
 TT_FINISH_MAP = 1
@@ -121,7 +98,7 @@ def parse(token, tokens):
                     "Expected a ',' or a ']' here, but got '" + token.value +
                     "'")
 
-        return tuple(val)
+        return val
 
     elif token.token_type == TT_START_MAP:
         val = {}
@@ -136,12 +113,21 @@ def parse(token, tokens):
 
         while token.token_type != TT_FINISH_MAP:
 
-            if token.token_type in (TT_PRIMITIVE, TT_START_LIST, TT_START_MAP):
+            if token.token_type == TT_PRIMITIVE:
                 k = parse(token, tokens)
+            elif token.token_type == TT_START_LIST:
+                raise ZishLocationException(
+                    token.line, token.character,
+                    "A list can't be a key in a map.")
+            elif token.token_type == TT_START_MAP:
+                raise ZishLocationException(
+                    token.line, token.character,
+                    "A map can't be a key in a map.")
             else:
                 raise ZishLocationException(
                     token.line, token.character,
-                    "Expected a key here, but got a " + token.value)
+                    "The token type " + str(token.token_type) +
+                    " isn't recognized.")
 
             try:
                 token = next(tokens)
@@ -193,7 +179,7 @@ def parse(token, tokens):
                     token.line, token.character,
                     "Expected a ',' or a '}' here, but got '" + token.value +
                     "'")
-        return ImmutableDict(val)
+        return val
 
     else:
         raise ZishException("Don't recognize the token type: " + str(token))

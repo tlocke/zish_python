@@ -374,22 +374,22 @@ and this is the third line.
         # An empty list value
         (
             '[]',
-            ()),
+            []),
 
         # List of three ints
         (
             '[1, 2, 3]',
-            (1, 2, 3)),
+            [1, 2, 3]),
 
         # List of an int and a string
         (
             '[ 1 , "two" ]',
-            (1, 'two')),
+            [1, 'two']),
 
         # Nested list
         (
             '["a" , ["b"]]',
-            ('a', ('b',))),
+            ['a', ['b']]),
 
         # Trailing comma is invalid in Zish (like JSON)
         (
@@ -410,8 +410,8 @@ and this is the third line.
         # Check good error for map when ':' is expected.
         ('{"num" 1}', ZishLocationException(0, 0, '')),
 
-        # Map with list as a key.
-        ('{["num", 1]: 1}', {('num', 1): 1}),
+        # Error: List can't be a key in a map.
+        ('{["num", 1]: 1}', ZishLocationException(0, 0, '')),
 
         # Invalid token after beginning of map.
         ('{:: 1}', ZishLocationException(0, 0, ''))])
