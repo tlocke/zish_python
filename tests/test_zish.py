@@ -332,7 +332,7 @@ and this is the third line.
             '{"center":{"x":1.0, "y":12.5}, "radius":3}',
             {'center': {'x': 1.0, 'y': 12.5}, 'radius': 3}),
 
-        # Map with extraneous values
+        # Multiple top-level values
         (
             '{} 3',
             ZishLocationException(0, 0, '')),
@@ -364,7 +364,12 @@ and this is the third line.
 
         # ERROR: missing field between commas
         (
-            '{ x:1, , }',
+            '{ "x":1, , }',
+            ZishLocationException(0, 0, '')),
+
+        # ERROR: Integer after value in a map
+        (
+            '{ "x": 1 4 }',
             ZishLocationException(0, 0, '')),
 
         #

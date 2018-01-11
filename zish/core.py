@@ -81,7 +81,8 @@ def parse(token, tokens):
             else:
                 raise ZishLocationException(
                     token.line, token.character,
-                    "Expected a value here, but got '" + token.value + "'")
+                    "Expected a value here, but got '" + str(token.value) +
+                    "'")
 
             token = next(tokens)
             if token.token_type == TT_COMMA:
@@ -95,8 +96,8 @@ def parse(token, tokens):
             else:
                 raise ZishLocationException(
                     token.line, token.character,
-                    "Expected a ',' or a ']' here, but got '" + token.value +
-                    "'")
+                    "Expected a ',' or a ']' here, but got '" +
+                    str(token.value) + "'")
 
         return val
 
@@ -155,7 +156,7 @@ def parse(token, tokens):
             else:
                 raise ZishLocationException(
                     token.line, token.character,
-                    "Expected a value here, but got a '" + token.value +
+                    "Expected a value here, but got a '" + str(token.value) +
                     "' instead.")
 
             try:
@@ -177,8 +178,8 @@ def parse(token, tokens):
             else:
                 raise ZishLocationException(
                     token.line, token.character,
-                    "Expected a ',' or a '}' here, but got '" + token.value +
-                    "'")
+                    "Expected a ',' or a '}' here, but got '" +
+                    str(token.value) + "'")
         return val
 
     else:
