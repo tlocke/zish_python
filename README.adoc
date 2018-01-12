@@ -106,6 +106,12 @@ A Hero of Our Time
 === Release Notes
 
 
+==== Version 0.0.25 (2018-01-12)
+
+* Better error message when the end of the document is reached without a map
+  being closed.
+
+
 ==== Version 0.0.24 (2018-01-11)
 
 * Fix bug where an integer after a value (and before a ',' or '}') in a map

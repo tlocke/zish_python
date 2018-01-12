@@ -162,17 +162,24 @@ def parse(token, tokens):
             try:
                 token = next(tokens)
             except StopIteration:
-                raise ZishLocationException(
-                    token.line, token.character,
-                    "After this value, a ',' or a '}' was expected, but "
-                    "reached the end of the document instead.")
+                raise ZishException(
+                    "Reached the end of the document without a map being "
+                    "closed with a '}'.")
 
             if token.token_type == TT_COMMA:
-                token = next(tokens)
+                try:
+                    token = next(tokens)
+                except StopIteration:
+                    raise ZishLocationException(
+                        token.line, token.character,
+                        "After this ',' a value was expected, but "
+                        "reached the end of the document instead.")
+
                 if token.token_type == TT_FINISH_MAP:
                     raise ZishLocationException(
                         token.line, token.character,
                         "Trailing commas aren't allowed in Zish.")
+
             elif token.token_type == TT_FINISH_MAP:
                 pass
             else:
@@ -330,8 +337,7 @@ def lex(zish_str):
     in_token = False
     token_type = None
     payload = []
-    line = 0
-    character = -1
+    line = character = 0
     token_line = token_character = None
     prev_c = None
     for c in chain(zish_str, (None,)):
@@ -341,7 +347,7 @@ def lex(zish_str):
         # Set position
         if c == '\n':
             line += 1
-            character = -1
+            character = 0
         character += 1
 
         if in_token:
