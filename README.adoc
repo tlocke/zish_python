@@ -106,6 +106,13 @@ A Hero of Our Time
 === Release Notes
 
 
+==== Version 0.0.26 (2018-01-29)
+
+* Remove '//' as a comment, following change in spec.
+
+* Allow 'e' and 'E' in the exponent of a decimal, following change in spec.
+
+
 ==== Version 0.0.25 (2018-01-12)
 
 * Better error message when the end of the document is reached without a map

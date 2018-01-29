@@ -41,10 +41,7 @@ TT_NO_DELIM = 9  # Non-delimited primitive
 
 TT_TIMESTAMP = 10
 
-# Comments
-TT_COMMENT = 11  # Either inline or block
-TT_INLINE_COMMENT = 12
-TT_BLOCK_COMMENT = 13
+TT_COMMENT = 11
 
 
 def load(file_like):
@@ -252,7 +249,7 @@ def _dump_float(obj):
     elif obj == float_nan:
         return 'nan'
     else:
-        return _repr_float(obj).lower()
+        return _repr_float(obj)
 
 
 def _dump(obj, indent):
@@ -282,7 +279,7 @@ def _dump(obj, indent):
     elif isinstance(obj, float):
         return _dump_float(obj)
     elif isinstance(obj, Decimal):
-        return str(obj).lower()
+        return str(obj)
     elif obj is None:
         return 'null'
     elif isinstance(obj, str):
@@ -463,30 +460,23 @@ def lex(zish_str):
                     payload.append(c)
 
             elif token_type == TT_COMMENT:
-                if c == '/':
-                    token_type = TT_INLINE_COMMENT
-                elif c == '*':
-                    token_type = TT_BLOCK_COMMENT
-                else:
-                    raise ZishLocationException(
-                        line, character, "Expected a '/' or '*' here.")
-
-            elif token_type == TT_INLINE_COMMENT:
-                if c in (
-                        '\u000A',   # LF: Line Feed
-                        '\u000B',   # VT: Vertical Tab
-                        '\u000C',   # FF: Form Feed
-                        '\u000D',   # CR: Carriage Return
-                        '\u0085',   # NEL: Next Line
-                        '\u2028',   # LS: Line Separator
-                        '\u2029'):  # PS: Paragraph Separator
-                    in_token = False
-                    consumed = True
-
-            elif token_type == TT_BLOCK_COMMENT:
                 if c == '/' and prev_c == '*':
-                    in_token = False
-                    consumed = True
+                    if len(payload) > 2:
+                        in_token = False
+                        consumed = True
+                    else:
+                        raise ZishException(
+                            "You can't have a comment that's '/*/', an "
+                            "empty comment is '/**/'.")
+                elif prev_c == '/' and len(payload) == 1 and c != '*':
+                    raise ZishLocationException(
+                        line, character, "A comment starts with a '/*'.")
+                elif c is None:
+                    raise ZishException(
+                        "Reached the end of the document without the "
+                        "comment being closed with a '*/'")
+                else:
+                    payload.append(c)
 
             else:
                 raise Exception(
@@ -514,6 +504,7 @@ def lex(zish_str):
                 token_type = TT_COMMENT
                 in_token = True
                 payload.clear()
+                payload.append(c)
             else:
                 token_type = TT_NO_DELIM
                 in_token = True

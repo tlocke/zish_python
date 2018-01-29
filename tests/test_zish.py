@@ -6,6 +6,7 @@ from datetime import (
 import pytest
 from decimal import Decimal
 from base64 import b64decode
+from collections import OrderedDict
 
 
 def test_load():
@@ -465,9 +466,9 @@ def test_loads(zish_str, pyth):
 
         (0.000001, '1e-06'),
 
-        (Decimal('0E-8'), '0e-8'),
+        (Decimal('0E-8'), '0E-8'),
 
-        ({1: 2, 'three': 'four'}, """{
+        (OrderedDict(((1, 2), ('three', 'four'))), """{
   1: 2,
   "three": "four"}""")])
 def test_dumps(pyth, zish_str):
@@ -498,11 +499,3 @@ def test_str():
         (float('+inFinity'), '+inf')])
 def test_dump_float(pyth, zish_str):
     assert core._dump_float(pyth) == zish_str
-
-
-def test_repr_dump_float(monkeypatch):
-    def mock_repr_float(obj):
-        return '0E0'
-
-    monkeypatch.setattr(core, '_repr_float', mock_repr_float)
-    assert core._dump_float(0) == '0e0'
