@@ -112,6 +112,10 @@ def parse(token, tokens):
         while token.token_type != TT_FINISH_MAP:
 
             if token.token_type == TT_PRIMITIVE:
+                if token.value is None:
+                    raise ZishLocationException(
+                        token.line, token.character,
+                        "null can't be a key in a map.")
                 k = parse(token, tokens)
             elif token.token_type == TT_START_LIST:
                 raise ZishLocationException(
