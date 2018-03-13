@@ -196,9 +196,8 @@ def test_dump():
         # ERROR: Exponent not denoted by 'd'
         ('0d0', ZishLocationException(0, 0, '')),
 
-        # Error: Zero as float can't have uppercase 'E' in exponent.
-        ('0E0', ZishLocationException(0, 0, '')),
-
+        # Zero with uppercase 'E' in exponent.
+        ('0E0', Decimal(0)),
 
         # Zero as decimal
         ('0e0', Decimal('0')),

@@ -326,7 +326,7 @@ SPACE = {
 NO_DELIM_END = set(SINGLE_TOKENS.keys()).union(SPACE, {'/'})
 
 RE_INTEGER = re.compile(r'-?(0|[1-9]\d*)$', re.ASCII)
-RE_DECIMAL = re.compile(r'-?(0|[1-9]\d*)(\.\d*)?(e[+\-]?\d+)?$', re.ASCII)
+RE_DECIMAL = re.compile(r'-?(0|[1-9]\d*)(\.\d*)?([eE][+\-]?\d+)?$', re.ASCII)
 RE_TIMESTAMP = re.compile(
     r'\d\d\d\d-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])T'
     r'([01]\d|2[0-3]):[0-5]\d:[0-5]\d(\.\d+)?'
