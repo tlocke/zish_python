@@ -107,6 +107,11 @@ A Hero of Our Time
 
 === Release Notes
 
+==== Version 0.1.2 (2018-09-04)
+
+* Change formatting for map and list in dumps. The trailing } and ] are now on
+  a line down and at the original index.
+
 
 ==== Version 0.1.1 (2018-03-13)
 
