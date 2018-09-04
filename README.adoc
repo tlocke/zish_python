@@ -56,10 +56,12 @@ Zish string to a Python object use `zish.loads`. Eg.
   "tags": [
     "russian",
     "novel",
-    "19th century"],
+    "19th century"
+  ],
   "title": "A Hero of Our Time",
   "weight": 6.88,
-  "would_recommend": true}
+  "would_recommend": true
+}
 >>>
 >>> # Load the Zish string, to give us back the Python object
 >>> reloaded_book = loads(zish_str)

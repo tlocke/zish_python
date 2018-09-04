@@ -454,10 +454,12 @@ def test_loads(zish_str, pyth):
   "tags": [
     "russian",
     "novel",
-    "19th centuary"],
+    "19th centuary"
+  ],
   "title": "A Hero of Our Time",
   "weight": 6.88,
-  "would_recommend": true}"""),
+  "would_recommend": true
+}"""),
 
         ((), '[]'),
 
@@ -469,7 +471,8 @@ def test_loads(zish_str, pyth):
 
         (OrderedDict(((1, 2), ('three', 'four'))), """{
   1: 2,
-  "three": "four"}""")])
+  "three": "four"
+}""")])
 def test_dumps(pyth, zish_str):
     assert dumps(pyth) == zish_str
 

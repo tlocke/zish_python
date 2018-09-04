@@ -271,13 +271,19 @@ def _dump(obj, indent):
             items.append(
                 '\n' + new_indent + _dump(k, new_indent) + ': ' +
                 _dump(v, new_indent))
-        return '{' + ','.join(items) + '}'
+        if len(items) == 0:
+            return '{}'
+        else:
+            return '{' + ','.join(items) + '\n' + indent + '}'
     elif isinstance(obj, bool):
         return 'true' if obj else 'false'
     elif isinstance(obj, (list, tuple, set, frozenset)):
         new_indent = indent + '  '
         b = ','.join('\n' + new_indent + _dump(v, new_indent) for v in obj)
-        return '[' + b + ']'
+        if len(b) == 0:
+            return '[]'
+        else:
+            return '[' + b + '\n' + indent + ']'
     elif isinstance(obj, int):
         return str(obj)
     elif isinstance(obj, float):
