@@ -28,7 +28,9 @@ def test_dump():
         # Error: Seconds are not optional
         (
             '2007-02-23T12:14Z',
-            ZishLocationException(0, 0, '')),
+            ZishLocationException(
+                0, 17, 'The timestamp 2007-02-23T12:14Z is not recognized.')
+        ),
 
         # A timestamp with millisecond precision and PST local time
         (
@@ -64,40 +66,52 @@ def test_dump():
         # Error: Must have a time
         (
             '2007-01-01',
-            ZishLocationException(0, 0, '')),
+            ZishLocationException(
+                0, 11, 'The value 2007-01-01 is not recognized.')
+        ),
 
         # The same value, different syntax.
         # Shouldn't actually be an error, but arrow says it is.
         (
             '2007-01-01T',
-            ZishLocationException(0, 0, '')),
+            ZishLocationException(
+                0, 12, 'The timestamp 2007-01-01T is malformed.')
+        ),
 
         # The same instant, with months precision, unknown local offset
         # Shouldn't actually be an error, but arrow says it is.
         (
             '2007-01T',
-            ZishLocationException(0, 0, '')),
+            ZishLocationException(0, 9, 'The timestamp 2007-01T is malformed.')
+        ),
 
         # The same instant, with years precision, unknown local offset
         # Shouldn't actually be an error, but arrow says it is.
         (
             '2007T',
-            ZishLocationException(0, 0, '')),
+            ZishLocationException(0, 6, 'The timestamp 2007T is malformed.')
+        ),
 
         # Error: Must have a time part
         (
             '2007-02-23',
-            ZishLocationException(0, 0, '')),
+            ZishLocationException(
+                0, 11, 'The value 2007-02-23 is not recognized.')
+        ),
 
         # Error: Must have seconds
         (
             '2007-02-23T00:00Z',
-            ZishLocationException(0, 0, '')),
+            ZishLocationException(
+                0, 17, 'The timestamp 2007-02-23T00:00Z is not recognized.')
+        ),
 
         # Error: Must have seconds
         (
             '2007-02-23T00:00+00:00',
-            ZishLocationException(0, 0, '')),
+            ZishLocationException(
+                0, 23, r'The timestamp 2007-02-23T00:00\+00:00 is malformed.')
+        ),
 
         # The same instant, with seconds precision
         (
@@ -105,20 +119,22 @@ def test_dump():
             Datetime(2007, 2, 23, tzinfo=Timezone.utc)),
 
         # Not a timestamp, but an int
-        (
-            '2007',
-            2007),
+        ('2007', 2007),
 
         # ERROR: Must end with 'T' if not whole-day precision, this results
         # as an invalid-numeric-stopper error
         (
             '2007-01',
-            ZishLocationException(0, 0, '')),
+            ZishLocationException(0, 8, 'The value 2007-01 is not recognized.')
+        ),
 
         # ERROR: Must have at least one digit precision after decimal point.
         (
             '2007-02-23T20:14:33.Z',
-            ZishLocationException(0, 0, '')),
+            ZishLocationException(
+                0, 21,
+                'The timestamp 2007-02-23T20:14:33.Z is not recognized.')
+        ),
 
         #
         # Null Values
@@ -150,38 +166,72 @@ def test_dump():
         ('-123', -123),
 
         # Error: An int can't be denoted in hexadecimal
-        ('0xBeef', ZishLocationException(0, 0, '')),
+        (
+            '0xBeef',
+            ZishLocationException(0, 7, 'The value 0xBeef is not recognized.')
+        ),
 
         # Error: An int can't be denoted in binary
-        ('0b0101', ZishLocationException(0, 0, '')),
+        (
+            '0b0101',
+            ZishLocationException(0, 7, 'The value 0b0101 is not recognized.')
+        ),
 
         # Error: An int can't have underscores
-        ('1_2_3', ZishLocationException(0, 0, '')),
+        (
+            '1_2_3',
+            ZishLocationException(0, 6, 'The value 1_2_3 is not recognized.')
+        ),
 
         # Error: An int can't be denoted in hexadecimal with underscores
-        ('0xFA_CE', ZishLocationException(0, 0, '')),
+        (
+            '0xFA_CE',
+            ZishLocationException(0, 8, 'The value 0xFA_CE is not recognized.')
+        ),
 
         # Error: An int can't be denoted in binary with underscores
-        ('0b10_10_10', ZishLocationException(0, 0, '')),
+        (
+            '0b10_10_10',
+            ZishLocationException(
+                0, 11, 'The value 0b10_10_10 is not recognized.')
+        ),
 
         # ERROR: leading plus not allowed
-        ('+1', ZishLocationException(0, 0, '')),
+        (
+            '+1',
+            ZishLocationException(0, 3, r'The value \+1 is not recognized.')
+        ),
 
         # ERROR: leading zeros not allowed (no support for octal notation)
-        ('0123', ZishLocationException(0, 0, '')),
+        (
+            '0123',
+            ZishLocationException(0, 5, 'The value 0123 is not recognized.')
+        ),
 
         # ERROR: trailing underscore not allowed
-        ('1_', ZishLocationException(0, 0, '')),
+        (
+            '1_',
+            ZishLocationException(0, 3, 'The value 1_ is not recognized.')
+        ),
 
         # ERROR: consecutive underscores not allowed
-        ('1__2', ZishLocationException(0, 0, '')),
+        (
+            '1__2',
+            ZishLocationException(0, 5, 'The value 1__2 is not recognized.')
+        ),
 
         # ERROR: underscore can only appear between digits (the radix prefix is
         # not a digit)
-        ('0x_12', ZishLocationException(0, 0, '')),
+        (
+            '0x_12',
+            ZishLocationException(0, 6, 'The value 0x_12 is not recognized.')
+        ),
 
         # ERROR: ints cannot start with underscores
-        ('_1', ZishLocationException(0, 0, '')),
+        (
+            '_1',
+            ZishLocationException(0, 3, 'The value _1 is not recognized.')
+        ),
 
         #
         # Real Numbers
@@ -194,7 +244,10 @@ def test_dump():
         ('-0.12e4', Decimal('-0.12e4')),
 
         # ERROR: Exponent not denoted by 'd'
-        ('0d0', ZishLocationException(0, 0, '')),
+        (
+            '0d0',
+            ZishLocationException(0, 4, 'The value 0d0 is not recognized.')
+        ),
 
         # Zero with uppercase 'E' in exponent.
         ('0E0', Decimal(0)),
@@ -203,7 +256,10 @@ def test_dump():
         ('0e0', Decimal('0')),
 
         # Error: Zero as decimal can't have uppercase 'D' in exponent.
-        ('0D0', ZishLocationException(0, 0, '')),
+        (
+            '0D0',
+            ZishLocationException(0, 4, 'The value 0D0 is not recognized.')
+        ),
 
         #   ...the same value with different notation
         ('0.', Decimal('0')),
@@ -212,7 +268,10 @@ def test_dump():
         ('-0e0', Decimal(-0)),
 
         # Error: Negative zero decimal with 'd' in expenent.
-        ('-0d0', ZishLocationException(0, 0, '')),
+        (
+            '-0d0',
+            ZishLocationException(0, 5, 'The value -0d0 is not recognized.')
+        ),
 
         #   ...the same value with different notation
         ('-0.', Decimal('-0')),
@@ -221,22 +280,46 @@ def test_dump():
         ('-0e-1', Decimal('-0.0')),
 
         # Error: Decimal can't have underscores
-        ('123_456.789_012', ZishLocationException(0, 0, '')),
+        (
+            '123_456.789_012',
+            ZishLocationException(
+                0, 16, 'The value 123_456.789_012 is not recognized.')
+        ),
 
         # ERROR: underscores may not appear next to the decimal point
-        ('123_._456', ZishLocationException(0, 0, '')),
+        (
+            '123_._456',
+            ZishLocationException(
+                0, 10, 'The value 123_._456 is not recognized.')
+        ),
 
         # ERROR: consecutive underscores not allowed
-        ('12__34.56', ZishLocationException(0, 0, '')),
+        (
+            '12__34.56',
+            ZishLocationException(
+                0, 10, 'The value 12__34.56 is not recognized.')
+        ),
 
         # ERROR: trailing underscore not allowed
-        ('123.456_', ZishLocationException(0, 0, '')),
+        (
+            '123.456_',
+            ZishLocationException(
+                0, 9, 'The value 123.456_ is not recognized.')
+        ),
 
         # ERROR: underscore after negative sign not allowed
-        ('-_123.456', ZishLocationException(0, 0, '')),
+        (
+            '-_123.456',
+            ZishLocationException(
+                0, 10, 'The value -_123.456 is not recognized.')
+        ),
 
         # ERROR: the symbol '_123' followed by an unexpected dot
-        ('_123.456', ZishLocationException(0, 0, '')),
+        (
+            '_123.456',
+            ZishLocationException(
+                0, 9, 'The value _123.456 is not recognized.')
+        ),
 
 
         #
@@ -256,13 +339,23 @@ def test_dump():
         (r'"\uABCD"', '\uABCD'),
 
         # ERROR: Invalid blob
-        ('xml::"<e a=\'v\'>c</e>"', ZishLocationException(0, 0, '')),
+        (
+            'xml::"<e a=\'v\'>c</e>"',
+            ZishLocationException(0, 4, 'The value xml is not recognized.')
+        ),
 
         # Set with one element
-        ('( "hello\rworld!"  )', ZishLocationException(0, 0, '')),
+        (
+            '( "hello\rworld!"  )',
+            ZishLocationException(0, 2, r'The value \( is not recognized.')
+        ),
 
         # The exact same set
-        ('("hello world!")', ZishLocationException(0, 0, '')),
+        (
+            '("hello world!")',
+            ZishLocationException(
+                0, 8, r'The value \("hello is not recognized.')
+        ),
 
         # This Zish value is a string containing three newlines. The serialized
         # form's first newline is escaped into nothingness.
@@ -300,7 +393,8 @@ and this is the third line.
         # ERROR: Padding character within the data.
         (
             "' VG8gaW5maW5pdHku=Li4gYW5kIGJleW9uZCE= '",
-            ZishLocationException(0, 0, '')),
+            ZishLocationException(0, 41, 'Non-base64 digit found')
+        ),
 
         # A valid blob value with two required padding characters.
         (
@@ -310,7 +404,8 @@ and this is the third line.
         # ERROR: Invalid character within the data.
         (
             "' dHdvIHBhZGRpbmc_gY2hhcmFjdGVycw= '",
-            ZishLocationException(0, 0, '')),
+            ZishLocationException(0, 36, 'Non-base64 digit found')
+        ),
 
 
         #
@@ -335,22 +430,34 @@ and this is the third line.
         # Multiple top-level values
         (
             '{} 3',
-            ZishLocationException(0, 0, '')),
+            ZishLocationException(
+                0, 5,
+                "Multiple top-level Zish values aren't allowed. For example, "
+                "at the top level you can't have a map followed by another "
+                "map.")
+        ),
 
         # Map with only opening brace
         (
             '{',
-            ZishLocationException(0, 0, '')),
+            ZishLocationException(
+                0, 1, r"After this opening '\{', a key or a closing '\}' was "
+                "expected, but reached the end of the document instead.")
+        ),
 
         # Map with only opening brace and value
         (
             '{ "Etienne"',
-            ZishLocationException(0, 0, '')),
+            ZishLocationException(
+                0, 11,
+                "After this key, a ':' was expected, but reached the end of "
+                "the document instead.")
+        ),
 
         # Trailing comma is invalid in Zish (like JSON)
         (
             '{ x:1, }',
-            ZishLocationException(0, 0, '')
+            ZishLocationException(0, 4, "The value x is not recognized.")
         ),
 
         # A map value containing a field with an empty name
@@ -362,18 +469,22 @@ and this is the third line.
         # ERROR: repeated name 'x'
         (
             '{ "x":1, "x":null }',
-            ZishLocationException(0, 0, '')
+            ZishLocationException(
+                0, 18, "Duplicate map keys aren't allowed: 'x'")
         ),
 
         # ERROR: missing field between commas
         (
             '{ "x":1, , }',
-            ZishLocationException(0, 0, '')),
+            ZishLocationException(0, 10, "The token type 3 isn't recognized.")
+        ),
 
         # ERROR: Integer after value in a map
         (
             '{ "x": 1 4 }',
-            ZishLocationException(0, 0, '')),
+            ZishLocationException(
+                0, 11, r"Expected a ',' or a '\}' here, but got '4'")
+        ),
 
         #
         # Lists
@@ -402,30 +513,50 @@ and this is the third line.
         # Trailing comma is invalid in Zish (like JSON)
         (
             '[ 1.2, ]',
-            ZishLocationException(0, 0, '')),
+            ZishLocationException(
+                0, 8, "Trailing commas aren't allowed in Zish.")
+        ),
 
         # ERROR: missing element between commas
         (
             '[ 1, , 2 ]',
-            ZishLocationException(0, 0, '')),
+            ZishLocationException(0, 6, "Expected a value here, but got ','")
+        ),
 
         # Input string ending in a newline
         ("{}\n", {}),
 
         # Check good error for string that isn't finished
-        ('"', ZishLocationException(0, 0, '')),
+        (
+            '"',
+            ZishLocationException(
+                0, 1,
+                "Parsing a string but can't find the ending '\"'. The first "
+                "part of the string is: ")
+        ),
 
         # Check good error for map when ':' is expected.
-        ('{"num" 1}', ZishLocationException(0, 0, '')),
+        (
+            '{"num" 1}',
+            ZishLocationException(0, 9, "Expected a ':' here, but got '1'.")
+        ),
 
         # Error: List can't be a key in a map.
-        ('{["num", 1]: 1}', ZishLocationException(0, 0, '')),
+        (
+            '{["num", 1]: 1}',
+            ZishLocationException(0, 2, "A list can't be a key in a map.")
+        ),
 
         # Invalid token after beginning of map.
-        ('{:: 1}', ZishLocationException(0, 0, ''))])
+        (
+            '{:: 1}',
+            ZishLocationException(0, 2, "The token type 2 isn't recognized.")
+        )
+    ]
+)
 def test_loads(zish_str, pyth):
     if isinstance(pyth, ZishLocationException):
-        with pytest.raises(ZishLocationException):
+        with pytest.raises(ZishLocationException, match=str(pyth)):
             loads(zish_str)
     elif isinstance(pyth, ZishException):
         with pytest.raises(ZishException):

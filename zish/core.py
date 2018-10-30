@@ -156,8 +156,7 @@ def parse(token, tokens):
                 if k in val:
                     raise ZishLocationException(
                         token.line, token.character,
-                        "Duplicate map keys aren't allowed. '" + str(
-                            token.value))
+                        "Duplicate map keys aren't allowed: '" + str(k) + "'.")
                 val[k] = parse(token, tokens)
             else:
                 raise ZishLocationException(
