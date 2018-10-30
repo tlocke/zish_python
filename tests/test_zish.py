@@ -350,17 +350,20 @@ and this is the third line.
         # Trailing comma is invalid in Zish (like JSON)
         (
             '{ x:1, }',
-            ZishLocationException(0, 0, '')),
+            ZishLocationException(0, 0, '')
+        ),
 
         # A map value containing a field with an empty name
         (
             '{ "":42 }',
-            {"": 42}),
+            {"": 42}
+        ),
 
-        # WARNING: repeated name 'x' leads to undefined behavior
+        # ERROR: repeated name 'x'
         (
             '{ "x":1, "x":null }',
-            {'x': None}),
+            ZishLocationException(0, 0, '')
+        ),
 
         # ERROR: missing field between commas
         (

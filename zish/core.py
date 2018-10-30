@@ -153,6 +153,11 @@ def parse(token, tokens):
                     "end of the document instead.")
 
             if token.token_type in (TT_PRIMITIVE, TT_START_LIST, TT_START_MAP):
+                if k in val:
+                    raise ZishLocationException(
+                        token.line, token.character,
+                        "Duplicate map keys aren't allowed. '" + str(
+                            token.value))
                 val[k] = parse(token, tokens)
             else:
                 raise ZishLocationException(
