@@ -551,6 +551,12 @@ and this is the third line.
         (
             '{:: 1}',
             ZishLocationException(0, 2, "The token type 2 isn't recognized.")
+        ),
+
+        # Error: Empty string
+        (
+            '',
+            ZishException("No Zish value found.")
         )
     ]
 )

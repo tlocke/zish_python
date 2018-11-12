@@ -54,7 +54,10 @@ def dump(obj, file_like):
 
 def loads(zish_str):
     tokens = lex(zish_str)
-    result = parse(next(tokens), tokens)
+    try:
+        result = parse(next(tokens), tokens)
+    except StopIteration:
+        raise ZishException("No Zish value found.")
     try:
         token = next(tokens)
         raise ZishLocationException(
