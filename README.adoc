@@ -107,6 +107,15 @@ A Hero of Our Time
 
 === Release Notes
 
+==== Version 0.1.7 (2020-02-11)
+
+* Use 1-based line and character numbers, rather than zero-based.
+
+* Arrow time library upgraded.
+
+* Line and character numbers now available in errors
+
+
 ==== Version 0.1.6 (2018-11-12)
 
 * Better error message when parsing an empty string.
@@ -316,5 +325,9 @@ then do:
 
 ....
 git tag -a x.y.z -m "version x.y.z"
-python setup.py sdist bdist_wheel upload --sign
+rm -r build
+rm -r dist
+python setup.py sdist bdist_wheel --python-tag py3
+for f in dist/*; do gpg --detach-sign -a $f; done
+twine upload dist/*
 ....
