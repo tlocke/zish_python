@@ -18,10 +18,13 @@ class ZishException(Exception):
 
 
 class ZishLocationException(ZishException):
-    def __init__(self, line, character, message):
+    def __init__(self, line, character, description):
         super().__init__(
             "Problem at line " + str(line) + " and character " +
-            str(character) + ": " + message)
+            str(character) + ": " + description)
+        self.description = description
+        self.line = line
+        self.character = character
 
 
 # Single character tokens
