@@ -354,7 +354,7 @@ def lex(zish_str):
     in_token = False
     token_type = None
     payload = []
-    line = character = 0
+    line = character = 1
     token_line = token_character = None
     prev_c = None
     for c in chain(zish_str, (None,)):
@@ -364,7 +364,7 @@ def lex(zish_str):
         # Set position
         if c == '\n':
             line += 1
-            character = 0
+            character = 1
         character += 1
 
         if in_token:
