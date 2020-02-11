@@ -13,6 +13,9 @@ setup(
     url='https://github.com/tlocke/zish_python',
     cmdclass=versioneer.get_cmdclass(),
     packages=[
-        'zish'],
+        'zish'
+    ],
     install_requires=[
-        'arrow==0.10.0'])
+        'arrow==0.15.5'
+    ]
+)
