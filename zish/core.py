@@ -287,9 +287,16 @@ def _dump(obj, indent):
             return '{' + ','.join(items) + '\n' + indent + '}'
     elif isinstance(obj, bool):
         return 'true' if obj else 'false'
-    elif isinstance(obj, (list, tuple, set, frozenset)):
+    elif isinstance(obj, (list, tuple)):
         new_indent = indent + '  '
         b = ','.join('\n' + new_indent + _dump(v, new_indent) for v in obj)
+        if len(b) == 0:
+            return '[]'
+        else:
+            return '[' + b + '\n' + indent + ']'
+    elif isinstance(obj, (set, frozenset)):
+        ni = indent + '  '
+        b = ','.join('\n' + ni + _dump(v, ni) for v in sorted(obj))
         if len(b) == 0:
             return '[]'
         else:

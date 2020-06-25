@@ -105,6 +105,30 @@ A Hero of Our Time
 |===
 
 
+=== Running The Tests
+
+* Change to the `zish` directory: `cd zish`
+* Create a virtual environment: `virtualenv --python=python3 venv`
+* Activate the virtual environment: `source venv/bin/activate`
+* Install tox: `pip install tox`
+* Run tox: `tox`
+
+
+==== Making A New Release
+
+Run `tox` to make sure all tests pass, then update the `Release Notes` section
+then do:
+
+....
+git tag -a x.y.z -m "version x.y.z"
+rm -r build
+rm -r dist
+python setup.py sdist bdist_wheel --python-tag py3
+for f in dist/*; do gpg --detach-sign -a $f; done
+twine upload dist/*
+....
+
+
 === Release Notes
 
 ==== Version 0.1.7 (2020-02-11)
@@ -305,29 +329,3 @@ A Hero of Our Time
 ==== Version 0.0.0 (2017-08-01)
 
 * First public release. Passes all the tests.
-
-
-=== Contributing
-
-To run the tests:
-
-* Change to the `zish` directory: `cd zish`
-* Create a virtual environment: `virtualenv --python=python3 venv`
-* Activate the virtual environment: `source venv/bin/activate`
-* Install tox: `pip install tox`
-* Run tox: `tox`
-
-
-==== Making A New Release
-
-Run `tox` to make sure all tests pass, then update the `Release Notes` section
-then do:
-
-....
-git tag -a x.y.z -m "version x.y.z"
-rm -r build
-rm -r dist
-python setup.py sdist bdist_wheel --python-tag py3
-for f in dist/*; do gpg --detach-sign -a $f; done
-twine upload dist/*
-....
