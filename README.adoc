@@ -131,6 +131,11 @@ twine upload dist/*
 
 === Release Notes
 
+==== Version 0.1.8 (2020-06-25)
+
+* Make `dumps` sort the `set` type before outputing as a list.
+
+
 ==== Version 0.1.7 (2020-02-11)
 
 * Use 1-based line and character numbers, rather than zero-based.
