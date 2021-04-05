@@ -1,0 +1,46 @@
+name: zish_python
+
+on: [push]
+
+jobs:
+  main-test:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+
+    container: python:${{ matrix.python-version }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-mock
+          python setup.py install
+      - name: Test with pytest
+        run: |
+          python -m pytest --exitfirst -v test
+
+  static-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install black flake8
+          python setup.py install
+      - name: Lint check
+        run: |
+          black --check .
+          flake8 --exclude=venv,.tox,build --ignore E203,W503 --max-line-length 88
+          python setup.py check
+          python -m doctest README.adoc

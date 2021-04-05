@@ -14,7 +14,7 @@ link="https://travis-ci.org/tlocke/zish_python"]
 
 It's a good idea to set up a virtualenv:
 
- virtualenv venv
+ python3 -m venv venv
  source venv/bin/activate
 
 then install Zish with pip:
@@ -56,11 +56,11 @@ Zish string to a Python object use `zish.loads`. Eg.
   "tags": [
     "russian",
     "novel",
-    "19th century"
+    "19th century",
   ],
   "title": "A Hero of Our Time",
   "weight": 6.88,
-  "would_recommend": true
+  "would_recommend": true,
 }
 >>>
 >>> # Load the Zish string, to give us back the Python object
