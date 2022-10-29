@@ -357,6 +357,7 @@ SPACE = {
     "\u000C",  # form feed
     "\u000D",  # carriage return
     "\u0020",
+    "\u00A0",  # NO-BREAK SPACE
 }  # space
 
 NO_DELIM_END = set(SINGLE_TOKENS.keys()).union(SPACE, {"/"})

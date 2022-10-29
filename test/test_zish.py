@@ -405,6 +405,8 @@ and this is the third line.
         ("{:: 1}", ZishLocationException(1, 3, "The token type 2 isn't recognized.")),
         # Error: Empty string
         ("", ZishException("No Zish value found.")),
+        # Input string ending in a U+00A0
+        ("{}\u00A0", {}),
     ],
 )
 def test_loads(zish_str, pyth):
