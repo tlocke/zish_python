@@ -122,6 +122,16 @@ do::
 Release Notes
 -------------
 
+Version 0.1.10 (2022-10-29)
+``````````````````````````
+
+- Switch to MIT-0 licence.
+
+- Make the U+00A0 NO-BREAK SPACE character whitespace
+
+- Better error message when ``dump()`` encounters an unrecognised type.
+
+
 Version 0.1.9 (2021-04-05)
 ``````````````````````````
 
