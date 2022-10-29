@@ -53,9 +53,11 @@ commands =
     black --check .
     flake8 .
     pytest -v -x -W error test
+    rst2html.py README.rst README.html
 deps =
     pytest
     black
     flake8
     flake8-alphabetize
+    Sphinx
 """

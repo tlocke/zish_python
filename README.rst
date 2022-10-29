@@ -107,6 +107,18 @@ Running The Tests
 - Run tox: ``tox``
 
 
+README.rst
+----------
+
+This file is written in the `reStructuredText
+<https://docutils.sourceforge.io/docs/user/rst/quickref.html>`_ format. To generate an
+HTML page from it, do:
+
+- Activate the virtual environment: ``source venv/bin/activate``
+- Install ``Sphinx``: ``pip install Sphinx``
+- Run ``rst2html.py``: ``rst2html.py README.rst README.html``
+
+
 Making A New Release
 --------------------
 
@@ -123,7 +135,7 @@ Release Notes
 -------------
 
 Version 0.1.10 (2022-10-29)
-``````````````````````````
+```````````````````````````
 
 - Switch to MIT-0 licence.
 
