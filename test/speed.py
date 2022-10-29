@@ -1,5 +1,6 @@
-from zish import loads
 from datetime import datetime as Datetime
+
+from zish import loads
 
 zish_str = """
 {

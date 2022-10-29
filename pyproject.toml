@@ -1,0 +1,61 @@
+[build-system]
+requires = [
+    "setuptools>=61",
+    "versioningit >= 2.0.1",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zish"
+description = "A Python library for the Zish format."
+readme = "README.rst"
+requires-python = ">=3.7"
+keywords = ["zish"]
+license = {text = "MIT No Attribution"}
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT No Attribution License (MIT-0)",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: Implementation",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "arrow >= 1.2.3",
+    'importlib-metadata >= 1.0 ; python_version < "3.8"',
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/tlocke/zish_python"
+
+[tool.versioningit]
+
+[tool.versioningit.vcs]
+method = "git"
+default-tag = "0.0.0"
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = True
+envlist = py
+
+[testenv]
+commands =
+    black --check .
+    flake8 .
+    pytest -v -x -W error test
+deps =
+    pytest
+    black
+    flake8
+    flake8-alphabetize
+"""

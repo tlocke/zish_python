@@ -1,12 +1,14 @@
-import arrow
-from decimal import Decimal
-from base64 import b64decode, b64encode
-from collections.abc import Mapping
-from collections import namedtuple
-from datetime import datetime as Datetime, timezone as Timezone
-import re
-from itertools import chain
 import binascii
+import re
+
+from base64 import b64decode, b64encode
+from collections import namedtuple
+from collections.abc import Mapping
+from datetime import datetime as Datetime, timezone as Timezone
+from decimal import Decimal
+from itertools import chain
+
+import arrow
 
 
 QUOTE = '"'

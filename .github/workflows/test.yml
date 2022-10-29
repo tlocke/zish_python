@@ -8,39 +8,38 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
 
     container: python:${{ matrix.python-version }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-mock
-          python setup.py install
+          pip install pytest .
+
       - name: Test with pytest
         run: |
-          python -m pytest --exitfirst -v test
+          python -m pytest -x -v -W error test --ignore=test/test_readme.py
 
   static-test:
+
     runs-on: ubuntu-latest
 
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.8
+          python-version: "3.10"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install black flake8
-          python setup.py install
+          pip install flake8 flake8-alphabetize pytest black .
       - name: Lint check
         run: |
           black --check .
-          flake8 --exclude=venv,.tox,build --ignore E203,W503 --max-line-length 88
-          python setup.py check
-          python -m doctest README.adoc
+          flake8 .
+          python -m pytest -x -v -W error test/test_readme.py
