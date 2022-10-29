@@ -474,3 +474,15 @@ def test_dumps(pyth, zish_str):
 )
 def test_dump_float(pyth, zish_str):
     assert core._dump_float(pyth) == zish_str
+
+
+def test_dumps_unrecognised_type():
+    class TestClass:
+        pass
+
+    with pytest.raises(
+        ZishException,
+        match="Type <class "
+        "'test_zish.test_dumps_unrecognised_type.<locals>.TestClass'> not recognised.",
+    ):
+        dumps(TestClass())

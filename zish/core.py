@@ -333,7 +333,7 @@ def _dump(obj, indent):
         else:
             return obj.isoformat()
     else:
-        raise ZishException("Type {type(obj)} not recognised.")
+        raise ZishException(f"Type {type(obj)} not recognised.")
 
 
 Token = namedtuple("Token", ["token_type", "line", "character", "value"])
