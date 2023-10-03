@@ -8,7 +8,7 @@ from datetime import datetime as Datetime, timezone as Timezone
 from decimal import Decimal
 from itertools import chain
 
-import arrow
+import dateutil.parser
 
 
 QUOTE = '"'
@@ -122,7 +122,6 @@ def parse(token, tokens):
             )
 
         while token.token_type != TT_FINISH_MAP:
-
             if token.token_type == TT_PRIMITIVE:
                 if token.value is None:
                     raise ZishLocationException(
@@ -465,9 +464,12 @@ def lex(zish_str):
                     if RE_TIMESTAMP.match(tstr) is not None:
                         try:
                             yield Token(
-                                TT_PRIMITIVE, line, character, arrow.get(tstr).datetime
+                                TT_PRIMITIVE,
+                                line,
+                                character,
+                                dateutil.parser.parse(tstr),
                             )
-                        except arrow.parser.ParserError as e:
+                        except dateutil.parser.ParserError as e:
                             raise ZishLocationException(
                                 line,
                                 character,
@@ -487,9 +489,12 @@ def lex(zish_str):
                     if RE_TIMESTAMP.match(tstr) is not None:
                         try:
                             yield Token(
-                                TT_PRIMITIVE, line, character, arrow.get(tstr).datetime
+                                TT_PRIMITIVE,
+                                line,
+                                character,
+                                dateutil.parser.parse(tstr),
                             )
-                        except arrow.parser.ParserError as e:
+                        except dateutil.parser.ParserError as e:
                             raise ZishLocationException(
                                 line,
                                 character,

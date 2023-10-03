@@ -1,3 +1,5 @@
+import binascii
+
 from base64 import b64decode
 from collections import OrderedDict
 from datetime import datetime as Datetime, timedelta as Timedelta, timezone as Timezone
@@ -17,6 +19,25 @@ def test_dump():
     f = StringIO()
     dump({}, f)
     assert f.getvalue() == "{}"
+
+
+# For Python version >= 3.10 there are various differences
+try:
+    result_excess_data = b64decode(
+        "VG8gaW5maW5pdHkuLi4gYW5kIGJleW9uZCE==", validate=True
+    )
+except binascii.Error:
+    result_excess_data = ZishLocationException(1, 42, "Excess data after padding")
+
+try:
+    b64decode("VG8gaW5maW5pdHku=Li4gYW5kIGJleW9uZCE=", validate=True)
+except binascii.Error as e:
+    msg_discontinuous = str(e)
+
+try:
+    b64decode("dHdvIHBhZGRpbmc_gY2hhcmFjdGVycw=", validate=True)
+except binascii.Error as e:
+    msg_only_b64 = str(e)
 
 
 @pytest.mark.parametrize(
@@ -279,12 +300,12 @@ and this is the third line.
         # ERROR: Incorrect number of padding characters.
         (
             "' VG8gaW5maW5pdHkuLi4gYW5kIGJleW9uZCE== '",
-            b64decode("VG8gaW5maW5pdHkuLi4gYW5kIGJleW9uZCE=="),
+            result_excess_data,
         ),
         # ERROR: Padding character within the data.
         (
             "' VG8gaW5maW5pdHku=Li4gYW5kIGJleW9uZCE= '",
-            ZishLocationException(1, 42, "Non-base64 digit found"),
+            ZishLocationException(1, 42, msg_discontinuous),
         ),
         # A valid blob value with two required padding characters.
         (
@@ -294,7 +315,7 @@ and this is the third line.
         # ERROR: Invalid character within the data.
         (
             "' dHdvIHBhZGRpbmc_gY2hhcmFjdGVycw= '",
-            ZishLocationException(1, 37, "Non-base64 digit found"),
+            ZishLocationException(1, 37, msg_only_b64),
         ),
         #
         # Maps

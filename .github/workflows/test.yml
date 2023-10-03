@@ -2,13 +2,15 @@ name: zish_python
 
 on: [push]
 
+permissions: read-all
+
 jobs:
   main-test:
 
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
 
     container: python:${{ matrix.python-version }}
 
@@ -16,6 +18,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install dependencies
         run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           python -m pip install --upgrade pip
           pip install pytest .
 
@@ -37,11 +40,14 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flake8 flake8-alphabetize pytest black Sphinx .
+          pip install flake8 flake8-alphabetize pytest black Sphinx build twine .
       - name: Lint check
         run: |
           black --check .
           flake8 .
           python -m pytest -x -v -W error test/test_readme.py
           rst2html.py README.rst README.html
+          rm -rf dist
+          python -m build
+          twine check dist/*
 
