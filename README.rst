@@ -134,6 +134,14 @@ do::
 Release Notes
 -------------
 
+Version 0.1.11 (2023-10-09)
+```````````````````````````
+
+- Fix bug where ``dump()`` didn't escape ``"`` and ``\\`` properly.
+
+- Remove support for Python 3.7 and add support for Python 3.11.
+
+
 Version 0.1.10 (2022-10-29)
 ```````````````````````````
 
