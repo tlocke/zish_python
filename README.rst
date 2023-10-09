@@ -128,7 +128,7 @@ do::
   git tag -a x.y.z -m "version x.y.z"
   rm -r dist
   python -m build
-  twine upload --sign dist/*
+  twine upload dist/*
 
 
 Release Notes
