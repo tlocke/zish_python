@@ -483,6 +483,7 @@ def test_loads(zish_str, pyth):
   "three": "four",
 }""",
         ),
+        ('k"sdf', '"k\\"sdf"'),
     ],
 )
 def test_dumps(pyth, zish_str):
@@ -495,6 +496,14 @@ def test_dumps(pyth, zish_str):
 )
 def test_dump_float(pyth, zish_str):
     assert core._dump_float(pyth) == zish_str
+
+
+@pytest.mark.parametrize(
+    "pyth,zish_str",
+    [('k"sdf', '"k\\"sdf"')],
+)
+def test_dump_str(pyth, zish_str):
+    assert core._dump_str(pyth) == zish_str
 
 
 def test_dumps_unrecognised_type():

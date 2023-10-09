@@ -282,6 +282,11 @@ def _dump_float(obj):
         return _repr_float(obj)
 
 
+def _dump_str(obj):
+    qstr = obj.replace("\\", "\\\\").replace('"', '\\"')
+    return f"{QUOTE}{qstr}{QUOTE}"
+
+
 def _dump(obj, indent):
     if isinstance(obj, Mapping):
         new_indent = f"{indent}  "
@@ -320,7 +325,7 @@ def _dump(obj, indent):
     elif obj is None:
         return "null"
     elif isinstance(obj, str):
-        return QUOTE + obj + QUOTE
+        return _dump_str(obj)
     elif isinstance(obj, (bytes, bytearray)):
         return f"'{b64encode(obj).decode()}'"
     elif isinstance(obj, Datetime):
