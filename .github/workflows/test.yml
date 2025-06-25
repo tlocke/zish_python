@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     container: python:${{ matrix.python-version }}
 
@@ -36,17 +36,17 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: "3.13"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flake8 flake8-alphabetize pytest black Sphinx build twine .
+          pip install flake8 flake8-alphabetize Flake8-pyproject pytest black docutils build twine .
       - name: Lint check
         run: |
           black --check .
           flake8 .
           python -m pytest -x -v -W error test/test_readme.py
-          rst2html.py README.rst README.html
+          rst2html README.rst README.html
           rm -rf dist
           python -m build
           twine check dist/*
