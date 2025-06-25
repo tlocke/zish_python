@@ -1,9 +1,9 @@
 [build-system]
 requires = [
-    "setuptools>=68.2.2",
-    "versioningit >= 2.2.1",
+	"hatchling >= 1.27.0",
+	"versioningit >= 3.2.0",
 ]
-build-backend = "setuptools.build_meta"
+build-backend = "hatchling.build"
 
 [project]
 name = "zish"
@@ -35,6 +35,9 @@ dynamic = ["version"]
 [project.urls]
 Homepage = "https://github.com/tlocke/zish_python"
 
+[tool.hatch.version]
+source = "versioningit"
+
 [tool.versioningit]
 
 [tool.versioningit.vcs]
@@ -53,7 +56,7 @@ commands =
     black --check .
     flake8 .
     pytest -v -x -W error test
-    rst2html.py README.rst README.html
+    rst2html README.rst README.html
     rm -rf dist
     python -m build
     twine check dist/*
@@ -62,7 +65,7 @@ deps =
     black
     flake8
     flake8-alphabetize
-    Sphinx
+    docutils
     build
     twine
 """

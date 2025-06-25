@@ -223,18 +223,18 @@ ESCAPES = {
     "a": "\u0007",  # alert BEL
     "b": "\u0008",  # backspace BS
     "t": "\u0009",  # horizontal tab HT
-    "n": "\u000A",  # linefeed LF
-    "f": "\u000C",  # form feed FF
-    "r": "\u000D",  # carriage return CR
-    "v": "\u000B",  # vertical tab VT
+    "n": "\u000a",  # linefeed LF
+    "f": "\u000c",  # form feed FF
+    "r": "\u000d",  # carriage return CR
+    "v": "\u000b",  # vertical tab VT
     '"': "\u0022",  # double quote
     "'": "\u0027",  # single quote
-    "?": "\u003F",  # question mark
-    "\\": "\u005C",  # backslash
-    "/": "\u002F",  # forward slash
-    "\u000D\u000A": "",  # empty string
-    "\u000D": "",  # empty string
-    "\u000A": "",
+    "?": "\u003f",  # question mark
+    "\\": "\u005c",  # backslash
+    "/": "\u002f",  # forward slash
+    "\u000d\u000a": "",  # empty string
+    "\u000d": "",  # empty string
+    "\u000a": "",
 }  # empty string
 
 
@@ -356,12 +356,12 @@ SINGLE_TOKENS = {
 SPACE = {
     None,  # EOF
     "\u0009",  # tab
-    "\u000A",  # line feed
-    "\u000B",  # vertical tab
-    "\u000C",  # form feed
-    "\u000D",  # carriage return
+    "\u000a",  # line feed
+    "\u000b",  # vertical tab
+    "\u000c",  # form feed
+    "\u000d",  # carriage return
     "\u0020",
-    "\u00A0",  # NO-BREAK SPACE
+    "\u00a0",  # NO-BREAK SPACE
 }  # space
 
 NO_DELIM_END = set(SINGLE_TOKENS.keys()).union(SPACE, {"/"})

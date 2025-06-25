@@ -253,7 +253,7 @@ except binascii.Error as e:
         # Contains one double-quote character
         ('"\\""', '"'),
         # Contains one unicode character
-        (r'"\uABCD"', "\uABCD"),
+        (r'"\uABCD"', "\uabcd"),
         # ERROR: Invalid blob
         (
             "xml::\"<e a='v'>c</e>\"",
@@ -427,7 +427,7 @@ and this is the third line.
         # Error: Empty string
         ("", ZishException("No Zish value found.")),
         # Input string ending in a U+00A0
-        ("{}\u00A0", {}),
+        ("{}\u00a0", {}),
     ],
 )
 def test_loads(zish_str, pyth):
