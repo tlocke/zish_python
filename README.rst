@@ -42,7 +42,7 @@ string to a Python object use ``zish.loads``. Eg.
 ...     'key': b'kshhgrl',
 ...     'tags': ['russian', 'novel', '19th century']}
 >>>
->>> # Output it as an Zish string
+>>> # Output it as a Zish string
 >>> zish_str = dumps(book)
 >>> print(zish_str)
 {
@@ -133,6 +133,14 @@ do::
 
 Release Notes
 -------------
+
+Version 0.1.12 (2025-06-26)
+```````````````````````````
+
+- Fix bug where ``dump()`` didn't give an error if a ``dict`` contained a ``None``.
+
+- Remove support for Python 3.8 and add support for Python 3.11, 3.12 and 3.13.
+
 
 Version 0.1.11 (2023-10-09)
 ```````````````````````````
