@@ -44,6 +44,13 @@ source = "versioningit"
 method = "git"
 default-tag = "0.0.0"
 
+[tool.flake8]
+application-names = ['zish']
+ignore = ['E203', 'W503']
+max-line-length = 88
+exclude = ['.git', '__pycache__', 'build', 'dist', 'venv', '.tox']
+application-import-names = ['zish']
+
 [tool.tox]
 legacy_tox_ini = """
 [tox]
@@ -65,6 +72,7 @@ deps =
     black
     flake8
     flake8-alphabetize
+    Flake8-pyproject
     docutils
     build
     twine
