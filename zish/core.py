@@ -299,6 +299,8 @@ def _dump(obj, indent):
             pass
 
         for k, v in item_gen:
+            if k is None:
+                raise ZishException("A key of None isn't allowed in a dictionary.")
             items.append(
                 f"\n{new_indent}{_dump(k, new_indent)}: {_dump(v, new_indent)},"
             )

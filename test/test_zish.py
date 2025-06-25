@@ -484,10 +484,18 @@ def test_loads(zish_str, pyth):
 }""",
         ),
         ('k"sdf', '"k\\"sdf"'),
+        ({None: None}, ZishException("A key of None isn't allowed in a dictionary")),
     ],
 )
 def test_dumps(pyth, zish_str):
-    assert dumps(pyth) == zish_str
+    if isinstance(zish_str, ZishLocationException):
+        with pytest.raises(ZishLocationException, match=str(zish_str)):
+            dumps(pyth)
+    elif isinstance(zish_str, ZishException):
+        with pytest.raises(ZishException):
+            dumps(pyth)
+    else:
+        assert dumps(pyth) == zish_str
 
 
 @pytest.mark.parametrize(
