@@ -51,29 +51,30 @@ max-line-length = 88
 exclude = ['.git', '__pycache__', 'build', 'dist', 'venv', '.tox']
 application-import-names = ['zish']
 
-[tool.tox]
-legacy_tox_ini = """
-[tox]
-isolated_build = True
-envlist = py
 
-[testenv]
-allowlist_externals=/usr/bin/rm
-commands =
-    black --check .
-    flake8 .
-    pytest -v -x -W error test
-    rst2html README.rst README.html
-    rm -rf dist
-    python -m build
-    twine check dist/*
-deps =
-    pytest
-    black
-    flake8
-    flake8-alphabetize
-    Flake8-pyproject
-    docutils
-    build
-    twine
-"""
+[tool.tox]
+requires = ["tox>=4.19"]
+envlist = ["py"]
+
+[tool.tox.env_run_base]
+description = "Run test under {base_python}"
+allowlist_externals = ["rm"]
+commands = [
+    ["black", "--check", "."],
+    ["flake8", "."],
+    ["pytest", "-v", "-x", "-W error", "test"],
+    ["rst2html", "README.rst", "README.html"],
+    ["rm", "-rf", "dist"],
+    ["python", "-m", "build"],
+    ["twine", "check", "dist/*"],
+]
+deps = [
+    "pytest",
+    "black",
+    "flake8",
+    "flake8-alphabetize",
+    "Flake8-pyproject",
+    "docutils",
+    "build",
+    "twine",
+]
